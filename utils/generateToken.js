@@ -1,18 +1,15 @@
-
-
-import { jwt } from "jsonwebtoken";
-import { exactOptional } from "zod";
-
+// import { jwt } from "jsonwebtoken";
+const { jwt } = 'jsonwebtoken'; 
 
 export const generateAccessToken = (user) => {
-  const { name, email } = user; 
+  const { id, role } = user; 
 
-  return jwt.sign({ name, email }, process.env.ACCESS_SECRET, { expiresIn: '15m' }); 
-
+  return jwt.sign({ id, role }, process.env.ACCESS_SECRET, { expiresIn: '15m' }); 
 }; 
 
+//  TODO : Diff secrect
 export const generateRefreshToken = (user) => {
-  const { name, email } = user; 
+  const { id, role } = user; 
 
-  return jwt.sign({ name, email }, process.env.ACCESS_SECRET, { expiresIn: '7d' }); 
+  return jwt.sign({ id, role }, process.env.ACCESS_SECRET, { expiresIn: '7d' }); 
 }
