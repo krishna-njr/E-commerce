@@ -1,5 +1,6 @@
 import AppError from "../../../../utils/AppError.js";
 import { generateAccessToken } from "../../../../utils/generateToken.js";
+import { comparePassword, hashPassword } from "../../../../utils/password.js";
 // import { sanitize } from "../../auth/services/auth.service.js";
 import {
   createUser,
@@ -21,7 +22,7 @@ export const registerUserService = async ({
     throw new AppError("Email already Exist", 400);
   }
 
-  const comparePassword = await bcrypt.hash(password, 10);
+  const hashPassword = await hashPassword(password);
 
   const user = await createUser({
     email,
@@ -43,9 +44,8 @@ export const loginUserService = async ({ email, password }) => {
     throw new AppError("User not exist", 400);
   }
 
-  const passwordCheck = await bcrypt.compare(password, user.password);
-
-  if (!passwordCheck) {
+  const isPasswordMatch = await comparePassword(password, user.password);
+  if (!isPasswordMatch) {
     throw new AppError("Unauthorized ", 401);
   }
 
