@@ -1,13 +1,11 @@
-import express from 'express'; 
-import { config } from 'dotenv'; 
-import app from './app.js';
+import express from "express";
+import { config } from "dotenv";
+import app from "./app.js";
 
-config(); 
+config();
 
-const PORT = process.env.PORT || 3000; 
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`server is up and running on http://localhost:${PORT}`)
-}); 
-
-export default app;
+  console.log(`server is up and running on http://localhost:${PORT}`);
+});
