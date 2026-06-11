@@ -8,4 +8,4 @@ router.get("/search", publicController.searchProducts);
 router.get("/browse", publicController.getPaginatedProducts);
 router.get("/sort", publicController.getSortedProducts);
 
-export default router;
+export { router };
