@@ -5,6 +5,9 @@ export const findUserById = async (userId) =>{
   try{
     const user = prisma.user.findUnique({
       where : {userId}, 
+      omit: {
+        password : true, 
+      }
     }); 
 
     return user; 
@@ -18,6 +21,9 @@ export const findUserByEmail = async (email) =>{
   try{
     const user = prisma.user.findUnique({
       where : {email}, 
+      omit: {
+        password : true, 
+      }
     }); 
 
     return user; 

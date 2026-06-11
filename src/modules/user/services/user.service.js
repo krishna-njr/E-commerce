@@ -41,6 +41,7 @@ export const registerUserService = async ({
   return sanitizeUser;
 };
 
+// ***************
 export const loginUserService = async ({ email, password }) => {
   const user = await findUserByEmail(email);
 

@@ -74,7 +74,7 @@ model Product {
   id          String  @id @default(uuid())
   name        String
   description String?
-  price       Decimal @db.Decimal(10, 2)
+  price       Decimal
 
   inventory Inventory?
 
@@ -128,7 +128,7 @@ model Order {
   orderStatus   OrderStatus   @default(PENDING)
   paymentStatus PaymentStatus @default(PENDING)
 
-  totalAmount Decimal @db.Decimal(10, 2)
+  totalAmount Decimal
 
   items    OrderItem[]
   delivery Delivery?
@@ -146,7 +146,7 @@ model Order {
 model OrderItem {
   id       String  @id @default(uuid())
   quantity Int
-  price    Decimal @db.Decimal(10, 2)
+  price    Decimal
 
   orderId   String
   order     Order   @relation(fields: [orderId], references: [id])
