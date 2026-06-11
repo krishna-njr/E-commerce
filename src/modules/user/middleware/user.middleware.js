@@ -1,13 +1,13 @@
 // validateAuthentication
 export const validateAuthentication = async (req, res, next) => {
   const authHeader = req.header.authorization;
-  const token = req.header.authorization.split(" ")[1];
+  const token = authHeader.split(" ")[1];
 
   if (!authHeader || !token) {
     const error = new Error("Invalid credentials");
     error.statusCode = 401;
     return next(error);
-  }
+  } 
 
   let decode;
   try {
