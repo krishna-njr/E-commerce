@@ -1,5 +1,5 @@
 // validateAuthentication
-export const authenticateValidation = async (req, res, next) => {
+export const validateAuthentication = async (req, res, next) => {
   const authHeader = req.header.authorization;
   const token = req.header.authorization.split(" ")[1];
 
