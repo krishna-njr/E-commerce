@@ -65,7 +65,7 @@ model Address {
   orders      Order[]
 
   userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id])
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -91,7 +91,7 @@ model Inventory {
   quantity    Int       @default(0)
 
   productId   String    @unique
-  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product     Product   @relation(fields: [productId], references: [id])
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -103,7 +103,7 @@ model Cart {
   items       CartItem[]
 
   userId      String      @unique
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id])
 
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -116,7 +116,7 @@ model CartItem {
   productId   String
   product     Product   @relation(fields: [productId], references: [id])
   cartId      String
-  cart        Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cart        Cart      @relation(fields: [cartId], references: [id])
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -150,7 +150,7 @@ model OrderItem {
   price         Decimal    @db.Decimal(10, 2)
 
   orderId       String
-  order         Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order         Order      @relation(fields: [orderId], references: [id])
   productId     String
   product       Product    @relation(fields: [productId], references: [id])
 
@@ -168,7 +168,7 @@ model Delivery {
   deliveredAt     DateTime?
 
   orderId         String           @unique
-  order           Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order           Order            @relation(fields: [orderId], references: [id])
 
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -182,7 +182,7 @@ model Notification {
   isRead      Boolean   @default(false)
 
   userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id])
 
   createdAt   DateTime  @default(now())
 }
