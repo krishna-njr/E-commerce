@@ -5,6 +5,7 @@ import * as sellerController from "../controller/product.seller.controller.js";
 
 const router = Router();
 
+
 // Protect all seller routes with authentication and role authorization middlewares
 // router.use(protect);
 // router.use(authorizeSeller);

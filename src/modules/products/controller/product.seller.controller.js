@@ -23,7 +23,7 @@ export const getSellerProductsFiltered = asyncWrapper(async (req, res) => {
 
 export const addProductController = asyncWrapper(async (req, res) => {
 
-  const productDetails = req.data; // name, price, description? 
+  const productDetails = req.body; // name, price, description? 
   const newProduct = await productService.addProductService(productDetails);
   res
     .status(201)
@@ -68,6 +68,8 @@ export const editProductController = asyncWrapper(async (req, res) => {
     id: req.params.id,
     ...req.body
   }
+  // console.log(productDetails);
+
   const editedProduct = await productService.editProductService(productDetails);
   res
     .status(200)

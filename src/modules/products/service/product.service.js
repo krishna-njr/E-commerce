@@ -102,6 +102,7 @@ export const addProductService = async (productDetails) => {
     return await productRepository.addProduct(productDetails);
 
   } catch (err) {
+    // console.log(err.message);
     if (err instanceof AppError) throw err;
     throw new AppError("Failed to add product", 500);
   }
@@ -109,11 +110,11 @@ export const addProductService = async (productDetails) => {
 
 
 
-export const editProductService = async (productDetails) => {
+export const editProductService = async (details) => {
   try {
 
-    const { id, ...productDetails } = productDetails;
-    if (!productDetails.id) {
+    const { id, ...productDetails } = details;
+    if (!id) {
       throw new AppError("Product id is required to edit product", 400);
     }
 

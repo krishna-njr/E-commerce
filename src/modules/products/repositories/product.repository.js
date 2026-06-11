@@ -28,7 +28,7 @@ export const getPaginated = async (skip = 0, take = 10) => {
       take: take,
     });
   } catch (err) {
-    console.error("Database Error in getPaginated: ", err,message);
+    console.error("Database Error in getPaginated: ", err, message);
     throw new AppError(`Database Error in getPaginated : ${err.message}`)
   }
 };
@@ -39,6 +39,7 @@ export const searchProduct = async (searchName) => {
       where: {
         name: {
           contains: searchName,
+          mode: 'insensitive',
         },
       },
     });
@@ -76,17 +77,17 @@ export const getProductsSorted = async (
 
 
 
-export const addProduct = async ({name, description, price}) => {
+export const addProduct = async ({ name, description, price }) => {
   try {
     return await prisma.product.create({
       data: {
-        name: name, 
-        description: description, 
-        price: price, 
+        name: name,
+        description: description,
+        price: price,
 
         inventory: {
           create: {}
-        }, 
+        },
 
         // cartItems: {
         //   create: [], 
@@ -109,7 +110,7 @@ export const getProductById = async (productId) => {
     return await prisma.product.findUnique({
       where: {
         id: productId
-      },  
+      },
     });
   } catch (err) {
     console.error("Database Error in getProductById:", err.message);
@@ -123,7 +124,7 @@ export const deleteProductById = async (productId) => {
     return await prisma.product.delete({
       where: {
         id: productId
-      },  
+      },
     });
   } catch (err) {
     console.error("Database Error in deleteProductById:", err.message);
@@ -136,7 +137,7 @@ export const editProductById = async (productId, productDetails) => {
     return await prisma.product.update({
       where: {
         id: productId
-      },  
+      },
       data: {
         ...productDetails
       }
