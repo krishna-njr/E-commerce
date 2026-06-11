@@ -7,7 +7,6 @@ import {
   findUserByEmail,
   findUserById,
 } from "../repositories/user.repository.js";
-import bcrypt from "bcrypt";
 
 export const registerUserService = async ({
   email,
@@ -17,19 +16,24 @@ export const registerUserService = async ({
   role,
 }) => {
   const userExist = await findUserByEmail(email);
-
+  // console.log(userExist);
+  
   if (userExist) {
     throw new AppError("Email already Exist", 400);
   }
 
-  const hashPassword = await hashPassword(password);
+  const hashedPassword = await hashPassword(password);
+
+  // let hashedPassword = '345fgh4o34567'; 
+  console.log('inside registerUserServices ', hashedPassword);
+  
 
   const user = await createUser({
     email,
     name,
     phoneNumber,
     role,
-    password: hashPassword,
+    password: hashedPassword,
   });
 
   const { password: _, ...sanitizeUser } = user;

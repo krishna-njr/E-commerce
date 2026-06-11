@@ -1,7 +1,9 @@
+import bcrypt from "bcrypt";
+
 export const comparePassword = (inputPassword, storedPassword) => {
-  return bcrypt.compare(inputPassword, storedPassword);
+  return bcrypt.compareSync(inputPassword, storedPassword);
 };
 
 export const hashPassword = (password) => {
-  return bcrypt.hash(password, 10);
+  return bcrypt.hashSync(password, 10);
 };

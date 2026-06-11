@@ -32,11 +32,11 @@ export const createUser = async (userData) => {
       const user = await tx.user.create({
         data: {
           email: userData.email, 
-          name: userData.name, 
+          fullName: userData.name, 
           password: userData.password, // passing hash password from service. 
           phoneNumber: userData.phoneNumber, 
           role : userData.role, 
-          status: 'active', // for now setting it default to 'active'
+          // status: 'ACTIVE', // for now setting it default to 'active'
         }
       }); 
 
@@ -47,6 +47,7 @@ export const createUser = async (userData) => {
       }); 
     }); 2
   }catch(err){
-    throw new Error('Database error in createUser', err.message); 
+    console.log(err.message)
+    throw new Error(`Database error in creating user : ${err.message}`); 
   }
 }
