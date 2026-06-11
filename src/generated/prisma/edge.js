@@ -256,7 +256,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/keshavverma/Desktop/coding/PROJECTS/E-commerce/E-commerce/src/generated/prisma",
+      "value": "/home/rails/Documents/projects/E-commerce/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -265,12 +265,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64",
+        "value": "debian-openssl-1.1.x",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/keshavverma/Desktop/coding/PROJECTS/E-commerce/E-commerce/prisma/schema.prisma",
+    "sourceFilePath": "/home/rails/Documents/projects/E-commerce/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
