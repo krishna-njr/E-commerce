@@ -6,6 +6,7 @@ import {
   createUser,
   findUserByEmail,
   findUserById,
+  getUserWithEmailAndPassword,
 } from "../repositories/user.repository.js";
 
 export const registerUserService = async ({
@@ -36,14 +37,12 @@ export const registerUserService = async ({
     password: hashedPassword,
   });
 
-  const { password: _, ...sanitizeUser } = user;
-
-  return sanitizeUser;
+  return user; 
 };
 
 // ***************
 export const loginUserService = async ({ email, password }) => {
-  const user = await findUserByEmail(email);
+  const user = await getUserWithEmailAndPassword(email);
 
   if (!user) {
     throw new AppError("User not exist", 400);
@@ -56,6 +55,7 @@ export const loginUserService = async ({ email, password }) => {
 
   const token = generateAccessToken(user);
 
+  // console.log('inside loginUserService : ', user); 
   const { password: _, ...sanitizeUser } = user;
   return { user: sanitizeUser, token };
 };
@@ -65,7 +65,5 @@ export const getUserDetailService = async (userId) => {
   if (!user) {
     throw new AppError("User not exist", 401);
   }
-
-  const { password: _, ...sanitizeUser } = user;
-  return { user: sanitizeUser };
+  return user; 
 };

@@ -32,6 +32,18 @@ export const findUserByEmail = async (email) =>{
   }
 }; 
 
+export const getUserWithEmailAndPassword = async (email) =>{
+  try{
+    const user = prisma.user.findUnique({
+      where : {email}, 
+    }); 
+
+    return user; 
+  }catch(err){
+    throw new Error('Database error in getUserWithEmailAndPassword ', err.message);
+  }
+}; 
+
 export const createUser = async (userData) => {
   try{
     return await prisma.$transaction(async (tx) => {
@@ -42,7 +54,11 @@ export const createUser = async (userData) => {
           password: userData.password, // passing hash password from service. 
           phoneNumber: userData.phoneNumber, 
           role : userData.role, 
+          
           // status: 'ACTIVE', // for now setting it default to 'active'
+        }, 
+        omit: {
+          password: true, 
         }
       }); 
 
@@ -50,8 +66,10 @@ export const createUser = async (userData) => {
         data: {
           userId : user.id,
         }
-      }); 
-    }); 2
+      });
+      
+      return user; 
+    }); 
   }catch(err){
     console.log(err.message)
     throw new Error(`Database error in creating user : ${err.message}`); 
