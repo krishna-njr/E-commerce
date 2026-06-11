@@ -1,4 +1,4 @@
-import * as productRepository from "./product.repository.js";
+import * as productRepository from "../repositories/product.repository.js";
 
 class BusinessError extends Error {
   constructor(message, statusCode = 400) {
