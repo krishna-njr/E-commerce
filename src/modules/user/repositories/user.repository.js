@@ -1,4 +1,5 @@
 import { prisma } from "../../../../clients/pg-client.js";
+import AppError from "../../../../utils/AppError.js";
 
 export const findUserById = async (userId) =>{
 
@@ -73,5 +74,21 @@ export const createUser = async (userData) => {
   }catch(err){
     console.log(err.message)
     throw new Error(`Database error in creating user : ${err.message}`); 
+  }
+}; 
+
+
+export const updateUserById = async ({userId, userDetails}) => {
+  try{
+    const updatedUser = await prisma.user.update({
+      where: {id : userId}, 
+      data: {
+        ...userDetails
+      }
+    }); 
+
+    return updatedUser; 
+  }catch(err){
+    throw new AppError(`Database error in updating user ${err.message}`, 500)
   }
 }

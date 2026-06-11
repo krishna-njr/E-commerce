@@ -7,6 +7,7 @@ import {
   findUserByEmail,
   findUserById,
   getUserWithEmailAndPassword,
+  updateUserById,
 } from "../repositories/user.repository.js";
 
 export const registerUserService = async ({
@@ -66,4 +67,24 @@ export const getUserDetailService = async (userId) => {
     throw new AppError("User not exist", 401);
   }
   return user; 
+};
+
+
+// update user details
+// Forgot Password
+// Reset/Change password
+
+
+export const updateUserDetailService = async (userDetails) => {
+  
+  const userId = userDetails.id; 
+  if(!userId){
+    throw new AppError("Id Required", 400); 
+  }
+
+  const updatedUser = await updateUserById({userId, userDetails});
+  if (!updatedUser) {
+    throw new AppError("User not exist", 401);
+  }
+  return updatedUser; 
 };
