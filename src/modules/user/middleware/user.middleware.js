@@ -23,7 +23,7 @@ export const authenticateValidation = async (req, res, next) => {
 };
 
 export const authorize =
-  async (...roles) =>
+  (...roles) =>
   (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       const error = new Error("Forbidden", 401);
