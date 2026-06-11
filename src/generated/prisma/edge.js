@@ -19,10 +19,7 @@ const {
   skip,
   Decimal,
   Debug,
-  DbNull,
-  JsonNull,
-  AnyNull,
-  NullTypes,
+  objectEnumValues,
   makeStrictEnum,
   Extensions,
   warnOnce,
@@ -30,7 +27,7 @@ const {
   Public,
   getRuntime,
   createParam,
-} = require('./runtime/wasm-compiler-edge.js')
+} = require('./runtime/edge.js')
 
 
 const Prisma = {}
@@ -39,12 +36,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.8.0
- * Query Engine version: 3c6e192761c0362d496ed980de936e2f3cebcd3a
+ * Prisma Client JS version: 6.19.3
+ * Query Engine version: c2990dca591cba766e3b7ef5d9e8a84796e47ab7
  */
 Prisma.prismaVersion = {
-  client: "7.8.0",
-  engine: "3c6e192761c0362d496ed980de936e2f3cebcd3a"
+  client: "6.19.3",
+  engine: "c2990dca591cba766e3b7ef5d9e8a84796e47ab7"
 }
 
 Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
@@ -72,11 +69,15 @@ Prisma.defineExtension = Extensions.defineExtension
 /**
  * Shorthand utilities for JSON filtering
  */
-Prisma.DbNull = DbNull
-Prisma.JsonNull = JsonNull
-Prisma.AnyNull = AnyNull
+Prisma.DbNull = objectEnumValues.instances.DbNull
+Prisma.JsonNull = objectEnumValues.instances.JsonNull
+Prisma.AnyNull = objectEnumValues.instances.AnyNull
 
-Prisma.NullTypes = NullTypes
+Prisma.NullTypes = {
+  DbNull: objectEnumValues.classes.DbNull,
+  JsonNull: objectEnumValues.classes.JsonNull,
+  AnyNull: objectEnumValues.classes.AnyNull
+}
 
 
 
@@ -94,39 +95,102 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
   email: 'email',
-  name: 'name',
-  addedAt: 'addedAt',
-  nickname: 'nickname',
-  phone_number: 'phone_number',
-  shipping_address: 'shipping_address',
+  password: 'password',
+  role: 'role',
+  phoneNumber: 'phoneNumber',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AddressScalarFieldEnum = {
+  id: 'id',
+  fullName: 'fullName',
+  phoneNumber: 'phoneNumber',
+  street: 'street',
+  city: 'city',
+  state: 'state',
+  country: 'country',
+  postalCode: 'postalCode',
+  userId: 'userId',
+  createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
 exports.Prisma.ProductScalarFieldEnum = {
   id: 'id',
-  addedAt: 'addedAt',
-  userId: 'userId',
-  description: 'description',
   name: 'name',
+  description: 'description',
   price: 'price',
-  type: 'type',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InventoryScalarFieldEnum = {
+  id: 'id',
   quantity: 'quantity',
+  productId: 'productId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CartScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CartItemScalarFieldEnum = {
+  id: 'id',
+  quantity: 'quantity',
+  productId: 'productId',
+  cartId: 'cartId',
+  createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
 exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
+  orderStatus: 'orderStatus',
+  paymentStatus: 'paymentStatus',
+  totalAmount: 'totalAmount',
   userId: 'userId',
-  productId: 'productId',
-  address: 'address',
-  details: 'details',
-  quantity: 'quantity',
-  addedAt: 'addedAt',
-  payment_status: 'payment_status',
-  shipping_status: 'shipping_status',
-  total_price: 'total_price',
+  addressId: 'addressId',
+  createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.OrderItemScalarFieldEnum = {
+  id: 'id',
+  quantity: 'quantity',
+  price: 'price',
+  orderId: 'orderId',
+  productId: 'productId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DeliveryScalarFieldEnum = {
+  id: 'id',
+  trackingNumber: 'trackingNumber',
+  deliveryStatus: 'deliveryStatus',
+  arrivalDate: 'arrivalDate',
+  deliveredAt: 'deliveredAt',
+  orderId: 'orderId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  message: 'message',
+  isRead: 'isRead',
+  userId: 'userId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -143,47 +207,114 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.Roles = exports.$Enums.Roles = {
-  USER: 'USER',
-  SELLER: 'SELLER',
+exports.UserRole = exports.$Enums.UserRole = {
+  CUSTOMER: 'CUSTOMER',
   ADMIN: 'ADMIN'
+};
+
+exports.OrderStatus = exports.$Enums.OrderStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  SHIPPED: 'SHIPPED',
+  DELIVERED: 'DELIVERED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED'
+};
+
+exports.DeliveryStatus = exports.$Enums.DeliveryStatus = {
+  PENDING: 'PENDING',
+  OUT_FOR_DELIVERY: 'OUT_FOR_DELIVERY',
+  DELIVERED: 'DELIVERED'
 };
 
 exports.Prisma.ModelName = {
   User: 'User',
+  Address: 'Address',
   Product: 'Product',
-  Order: 'Order'
+  Inventory: 'Inventory',
+  Cart: 'Cart',
+  CartItem: 'CartItem',
+  Order: 'Order',
+  OrderItem: 'OrderItem',
+  Delivery: 'Delivery',
+  Notification: 'Notification'
 };
 /**
  * Create the Client
  */
 const config = {
-  "previewFeatures": [],
-  "clientVersion": "7.8.0",
-  "engineVersion": "3c6e192761c0362d496ed980de936e2f3cebcd3a",
-  "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  id               Int       @id @default(autoincrement())\n  email            String    @unique\n  name             String\n  addedAt          DateTime  @default(now())\n  nickname         String?\n  phone_number     String\n  shipping_address String\n  updatedAt        DateTime  @updatedAt\n  order            Order[]\n  product          Product[]\n}\n\nmodel Product {\n  id          Int      @id @default(autoincrement())\n  addedAt     DateTime @default(now())\n  userId      Int\n  description String?\n  name        String\n  price       BigInt\n  type        String\n  quantity    BigInt?\n  updatedAt   DateTime @updatedAt\n  order       Order[]\n  user        User     @relation(fields: [userId], references: [id])\n}\n\nmodel Order {\n  id              Int      @id @default(autoincrement())\n  userId          Int\n  productId       Int\n  address         String\n  details         String\n  quantity        Int\n  addedAt         DateTime @default(now())\n  payment_status  Boolean\n  shipping_status Boolean\n  total_price     BigInt\n  updatedAt       DateTime @updatedAt\n  product         Product  @relation(fields: [productId], references: [id])\n  user            User     @relation(fields: [userId], references: [id])\n}\n\nenum Roles {\n  USER\n  SELLER\n  ADMIN\n}\n"
-}
-
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"addedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"nickname\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone_number\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"shipping_address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"order\",\"kind\":\"object\",\"type\":\"Order\",\"relationName\":\"OrderToUser\"},{\"name\":\"product\",\"kind\":\"object\",\"type\":\"Product\",\"relationName\":\"ProductToUser\"}],\"dbName\":null},\"Product\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"addedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"order\",\"kind\":\"object\",\"type\":\"Order\",\"relationName\":\"OrderToProduct\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ProductToUser\"}],\"dbName\":null},\"Order\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"details\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"addedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"payment_status\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"shipping_status\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"total_price\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"product\",\"kind\":\"object\",\"type\":\"Product\",\"relationName\":\"OrderToProduct\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"OrderToUser\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
-defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
-config.parameterizationSchema = {
-  strings: JSON.parse("[\"where\",\"orderBy\",\"cursor\",\"order\",\"user\",\"_count\",\"product\",\"User.findUnique\",\"User.findUniqueOrThrow\",\"User.findFirst\",\"User.findFirstOrThrow\",\"User.findMany\",\"data\",\"User.createOne\",\"User.createMany\",\"User.createManyAndReturn\",\"User.updateOne\",\"User.updateMany\",\"User.updateManyAndReturn\",\"create\",\"update\",\"User.upsertOne\",\"User.deleteOne\",\"User.deleteMany\",\"having\",\"_avg\",\"_sum\",\"_min\",\"_max\",\"User.groupBy\",\"User.aggregate\",\"Product.findUnique\",\"Product.findUniqueOrThrow\",\"Product.findFirst\",\"Product.findFirstOrThrow\",\"Product.findMany\",\"Product.createOne\",\"Product.createMany\",\"Product.createManyAndReturn\",\"Product.updateOne\",\"Product.updateMany\",\"Product.updateManyAndReturn\",\"Product.upsertOne\",\"Product.deleteOne\",\"Product.deleteMany\",\"Product.groupBy\",\"Product.aggregate\",\"Order.findUnique\",\"Order.findUniqueOrThrow\",\"Order.findFirst\",\"Order.findFirstOrThrow\",\"Order.findMany\",\"Order.createOne\",\"Order.createMany\",\"Order.createManyAndReturn\",\"Order.updateOne\",\"Order.updateMany\",\"Order.updateManyAndReturn\",\"Order.upsertOne\",\"Order.deleteOne\",\"Order.deleteMany\",\"Order.groupBy\",\"Order.aggregate\",\"AND\",\"OR\",\"NOT\",\"id\",\"userId\",\"productId\",\"address\",\"details\",\"quantity\",\"addedAt\",\"payment_status\",\"shipping_status\",\"total_price\",\"updatedAt\",\"equals\",\"in\",\"notIn\",\"lt\",\"lte\",\"gt\",\"gte\",\"not\",\"contains\",\"startsWith\",\"endsWith\",\"description\",\"name\",\"price\",\"type\",\"email\",\"nickname\",\"phone_number\",\"shipping_address\",\"every\",\"some\",\"none\",\"is\",\"isNot\",\"connectOrCreate\",\"upsert\",\"createMany\",\"set\",\"disconnect\",\"delete\",\"connect\",\"updateMany\",\"deleteMany\",\"increment\",\"decrement\",\"multiply\",\"divide\"]"),
-  graph: "1AEhMA0DAAByACAGAABzACA_AABtADBAAAAQABBBAABtADBCAgAAAAFIQABwACFMQABwACFZAQBvACFcAQAAAAFdAQBxACFeAQBvACFfAQBvACEBAAAAAQAgEAQAAHcAIAYAAHoAID8AAHgAMEAAAAMAEEEAAHgAMEICAG4AIUMCAG4AIUQCAG4AIUUBAG8AIUYBAG8AIUcCAG4AIUhAAHAAIUkgAHkAIUogAHkAIUsEAHUAIUxAAHAAIQIEAADBAQAgBgAAwgEAIBAEAAB3ACAGAAB6ACA_AAB4ADBAAAADABBBAAB4ADBCAgAAAAFDAgBuACFEAgBuACFFAQBvACFGAQBvACFHAgBuACFIQABwACFJIAB5ACFKIAB5ACFLBAB1ACFMQABwACEDAAAAAwAgAQAABAAwAgAABQAgAwAAAAMAIAEAAAQAMAIAAAUAIAEAAAADACAOAwAAcgAgBAAAdwAgPwAAdAAwQAAACQAQQQAAdAAwQgIAbgAhQwIAbgAhRwQAdgAhSEAAcAAhTEAAcAAhWAEAcQAhWQEAbwAhWgQAdQAhWwEAbwAhBAMAAL8BACAEAADBAQAgRwAAiQEAIFgAAIkBACAOAwAAcgAgBAAAdwAgPwAAdAAwQAAACQAQQQAAdAAwQgIAAAABQwIAbgAhRwQAdgAhSEAAcAAhTEAAcAAhWAEAcQAhWQEAbwAhWgQAdQAhWwEAbwAhAwAAAAkAIAEAAAoAMAIAAAsAIAEAAAADACABAAAACQAgAQAAAAEAIA0DAAByACAGAABzACA_AABtADBAAAAQABBBAABtADBCAgBuACFIQABwACFMQABwACFZAQBvACFcAQBvACFdAQBxACFeAQBvACFfAQBvACEDAwAAvwEAIAYAAMABACBdAACJAQAgAwAAABAAIAEAABEAMAIAAAEAIAMAAAAQACABAAARADACAAABACADAAAAEAAgAQAAEQAwAgAAAQAgCgMAAL0BACAGAAC-AQAgQgIAAAABSEAAAAABTEAAAAABWQEAAAABXAEAAAABXQEAAAABXgEAAAABXwEAAAABAQwAABUAIAhCAgAAAAFIQAAAAAFMQAAAAAFZAQAAAAFcAQAAAAFdAQAAAAFeAQAAAAFfAQAAAAEBDAAAFwAwAQwAABcAMAoDAACmAQAgBgAApwEAIEICAIEBACFIQACCAQAhTEAAggEAIVkBAIABACFcAQCAAQAhXQEAjwEAIV4BAIABACFfAQCAAQAhAgAAAAEAIAwAABoAIAhCAgCBAQAhSEAAggEAIUxAAIIBACFZAQCAAQAhXAEAgAEAIV0BAI8BACFeAQCAAQAhXwEAgAEAIQIAAAAQACAMAAAcACACAAAAEAAgDAAAHAAgAwAAAAEAIBMAABUAIBQAABoAIAEAAAABACABAAAAEAAgBgUAAKEBACAZAACiAQAgGgAApQEAIBsAAKQBACAcAACjAQAgXQAAiQEAIAs_AABsADBAAAAjABBBAABsADBCAgBTACFIQABVACFMQABVACFZAQBUACFcAQBUACFdAQBkACFeAQBUACFfAQBUACEDAAAAEAAgAQAAIgAwGAAAIwAgAwAAABAAIAEAABEAMAIAAAEAIAEAAAALACABAAAACwAgAwAAAAkAIAEAAAoAMAIAAAsAIAMAAAAJACABAAAKADACAAALACADAAAACQAgAQAACgAwAgAACwAgCwMAAJ8BACAEAACgAQAgQgIAAAABQwIAAAABRwQAAAABSEAAAAABTEAAAAABWAEAAAABWQEAAAABWgQAAAABWwEAAAABAQwAACsAIAlCAgAAAAFDAgAAAAFHBAAAAAFIQAAAAAFMQAAAAAFYAQAAAAFZAQAAAAFaBAAAAAFbAQAAAAEBDAAALQAwAQwAAC0AMAsDAACRAQAgBAAAkgEAIEICAIEBACFDAgCBAQAhRwQAkAEAIUhAAIIBACFMQACCAQAhWAEAjwEAIVkBAIABACFaBACEAQAhWwEAgAEAIQIAAAALACAMAAAwACAJQgIAgQEAIUMCAIEBACFHBACQAQAhSEAAggEAIUxAAIIBACFYAQCPAQAhWQEAgAEAIVoEAIQBACFbAQCAAQAhAgAAAAkAIAwAADIAIAIAAAAJACAMAAAyACADAAAACwAgEwAAKwAgFAAAMAAgAQAAAAsAIAEAAAAJACAHBQAAigEAIBkAAIsBACAaAACOAQAgGwAAjQEAIBwAAIwBACBHAACJAQAgWAAAiQEAIAw_AABjADBAAAA5ABBBAABjADBCAgBTACFDAgBTACFHBABlACFIQABVACFMQABVACFYAQBkACFZAQBUACFaBABXACFbAQBUACEDAAAACQAgAQAAOAAwGAAAOQAgAwAAAAkAIAEAAAoAMAIAAAsAIAEAAAAFACABAAAABQAgAwAAAAMAIAEAAAQAMAIAAAUAIAMAAAADACABAAAEADACAAAFACADAAAAAwAgAQAABAAwAgAABQAgDQQAAIgBACAGAACHAQAgQgIAAAABQwIAAAABRAIAAAABRQEAAAABRgEAAAABRwIAAAABSEAAAAABSSAAAAABSiAAAAABSwQAAAABTEAAAAABAQwAAEEAIAtCAgAAAAFDAgAAAAFEAgAAAAFFAQAAAAFGAQAAAAFHAgAAAAFIQAAAAAFJIAAAAAFKIAAAAAFLBAAAAAFMQAAAAAEBDAAAQwAwAQwAAEMAMA0EAACGAQAgBgAAhQEAIEICAIEBACFDAgCBAQAhRAIAgQEAIUUBAIABACFGAQCAAQAhRwIAgQEAIUhAAIIBACFJIACDAQAhSiAAgwEAIUsEAIQBACFMQACCAQAhAgAAAAUAIAwAAEYAIAtCAgCBAQAhQwIAgQEAIUQCAIEBACFFAQCAAQAhRgEAgAEAIUcCAIEBACFIQACCAQAhSSAAgwEAIUogAIMBACFLBACEAQAhTEAAggEAIQIAAAADACAMAABIACACAAAAAwAgDAAASAAgAwAAAAUAIBMAAEEAIBQAAEYAIAEAAAAFACABAAAAAwAgBQUAAHsAIBkAAHwAIBoAAH8AIBsAAH4AIBwAAH0AIA4_AABSADBAAABPABBBAABSADBCAgBTACFDAgBTACFEAgBTACFFAQBUACFGAQBUACFHAgBTACFIQABVACFJIABWACFKIABWACFLBABXACFMQABVACEDAAAAAwAgAQAATgAwGAAATwAgAwAAAAMAIAEAAAQAMAIAAAUAIA4_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_AABtADBAAAAQABBBAABtADBCAgBuACFIQABwACFMQABwACFZAQBvACFcAQBvACFdAQBxACFeAQBvACFfAQBvACEITQIAAAABTgIAAAAETwIAAAAEUAIAAAABUQIAAAABUgIAAAABUwIAAAABVAIAWQAhC00BAAAAAU4BAAAABE8BAAAABFABAAAAAVEBAAAAAVIBAAAAAVMBAAAAAVQBAGEAIVUBAAAAAVYBAAAAAVcBAAAAAQhNQAAAAAFOQAAAAARPQAAAAARQQAAAAAFRQAAAAAFSQAAAAAFTQAAAAAFUQABfACELTQEAAAABTgEAAAAFTwEAAAAFUAEAAAABUQEAAAABUgEAAAABUwEAAAABVAEAawAhVQEAAAABVgEAAAABVwEAAAABA2AAAAMAIGEAAAMAIGIAAAMAIANgAAAJACBhAAAJACBiAAAJACAOAwAAcgAgBAAAdwAgPwAAdAAwQAAACQAQQQAAdAAwQgIAbgAhQwIAbgAhRwQAdgAhSEAAcAAhTEAAcAAhWAEAcQAhWQEAbwAhWgQAdQAhWwEAbwAhCE0EAAAAAU4EAAAABE8EAAAABFAEAAAAAVEEAAAAAVIEAAAAAVMEAAAAAVQEAFsAIQhNBAAAAAFOBAAAAAVPBAAAAAVQBAAAAAFRBAAAAAFSBAAAAAFTBAAAAAFUBABpACEPAwAAcgAgBgAAcwAgPwAAbQAwQAAAEAAQQQAAbQAwQgIAbgAhSEAAcAAhTEAAcAAhWQEAbwAhXAEAbwAhXQEAcQAhXgEAbwAhXwEAbwAhYwAAEAAgZAAAEAAgEAQAAHcAIAYAAHoAID8AAHgAMEAAAAMAEEEAAHgAMEICAG4AIUMCAG4AIUQCAG4AIUUBAG8AIUYBAG8AIUcCAG4AIUhAAHAAIUkgAHkAIUogAHkAIUsEAHUAIUxAAHAAIQJNIAAAAAFUIABdACEQAwAAcgAgBAAAdwAgPwAAdAAwQAAACQAQQQAAdAAwQgIAbgAhQwIAbgAhRwQAdgAhSEAAcAAhTEAAcAAhWAEAcQAhWQEAbwAhWgQAdQAhWwEAbwAhYwAACQAgZAAACQAgAAAAAAABaAEAAAABBWgCAAAAAW4CAAAAAW8CAAAAAXACAAAAAXECAAAAAQFoQAAAAAEBaCAAAAABBWgEAAAAAW4EAAAAAW8EAAAAAXAEAAAAAXEEAAAAAQUTAADNAQAgFAAA0wEAIGUAAM4BACBmAADSAQAgawAACwAgBRMAAMsBACAUAADQAQAgZQAAzAEAIGYAAM8BACBrAAABACADEwAAzQEAIGUAAM4BACBrAAALACADEwAAywEAIGUAAMwBACBrAAABACAAAAAAAAABaAEAAAABBWgEAAAAAW4EAAAAAW8EAAAAAXAEAAAAAXEEAAAAAQsTAACTAQAwFAAAmAEAMGUAAJQBADBmAACVAQAwZwAAlgEAIGgAAJcBADBpAACXAQAwagAAlwEAMGsAAJcBADBsAACZAQAwbQAAmgEAMAUTAADFAQAgFAAAyQEAIGUAAMYBACBmAADIAQAgawAAAQAgCwQAAIgBACBCAgAAAAFDAgAAAAFFAQAAAAFGAQAAAAFHAgAAAAFIQAAAAAFJIAAAAAFKIAAAAAFLBAAAAAFMQAAAAAECAAAABQAgEwAAngEAIAMAAAAFACATAACeAQAgFAAAnQEAIAEMAADHAQAwEAQAAHcAIAYAAHoAID8AAHgAMEAAAAMAEEEAAHgAMEICAAAAAUMCAG4AIUQCAG4AIUUBAG8AIUYBAG8AIUcCAG4AIUhAAHAAIUkgAHkAIUogAHkAIUsEAHUAIUxAAHAAIQIAAAAFACAMAACdAQAgAgAAAJsBACAMAACcAQAgDj8AAJoBADBAAACbAQAQQQAAmgEAMEICAG4AIUMCAG4AIUQCAG4AIUUBAG8AIUYBAG8AIUcCAG4AIUhAAHAAIUkgAHkAIUogAHkAIUsEAHUAIUxAAHAAIQ4_AACaAQAwQAAAmwEAEEEAAJoBADBCAgBuACFDAgBuACFEAgBuACFFAQBvACFGAQBvACFHAgBuACFIQABwACFJIAB5ACFKIAB5ACFLBAB1ACFMQABwACEKQgIAgQEAIUMCAIEBACFFAQCAAQAhRgEAgAEAIUcCAIEBACFIQACCAQAhSSAAgwEAIUogAIMBACFLBACEAQAhTEAAggEAIQsEAACGAQAgQgIAgQEAIUMCAIEBACFFAQCAAQAhRgEAgAEAIUcCAIEBACFIQACCAQAhSSAAgwEAIUogAIMBACFLBACEAQAhTEAAggEAIQsEAACIAQAgQgIAAAABQwIAAAABRQEAAAABRgEAAAABRwIAAAABSEAAAAABSSAAAAABSiAAAAABSwQAAAABTEAAAAABBBMAAJMBADBlAACUAQAwZwAAlgEAIGsAAJcBADADEwAAxQEAIGUAAMYBACBrAAABACAAAAAAAAsTAAC0AQAwFAAAuAEAMGUAALUBADBmAAC2AQAwZwAAtwEAIGgAAJcBADBpAACXAQAwagAAlwEAMGsAAJcBADBsAAC5AQAwbQAAmgEAMAsTAACoAQAwFAAArQEAMGUAAKkBADBmAACqAQAwZwAAqwEAIGgAAKwBADBpAACsAQAwagAArAEAMGsAAKwBADBsAACuAQAwbQAArwEAMAkDAACfAQAgQgIAAAABRwQAAAABSEAAAAABTEAAAAABWAEAAAABWQEAAAABWgQAAAABWwEAAAABAgAAAAsAIBMAALMBACADAAAACwAgEwAAswEAIBQAALIBACABDAAAxAEAMA4DAAByACAEAAB3ACA_AAB0ADBAAAAJABBBAAB0ADBCAgAAAAFDAgBuACFHBAB2ACFIQABwACFMQABwACFYAQBxACFZAQBvACFaBAB1ACFbAQBvACECAAAACwAgDAAAsgEAIAIAAACwAQAgDAAAsQEAIAw_AACvAQAwQAAAsAEAEEEAAK8BADBCAgBuACFDAgBuACFHBAB2ACFIQABwACFMQABwACFYAQBxACFZAQBvACFaBAB1ACFbAQBvACEMPwAArwEAMEAAALABABBBAACvAQAwQgIAbgAhQwIAbgAhRwQAdgAhSEAAcAAhTEAAcAAhWAEAcQAhWQEAbwAhWgQAdQAhWwEAbwAhCEICAIEBACFHBACQAQAhSEAAggEAIUxAAIIBACFYAQCPAQAhWQEAgAEAIVoEAIQBACFbAQCAAQAhCQMAAJEBACBCAgCBAQAhRwQAkAEAIUhAAIIBACFMQACCAQAhWAEAjwEAIVkBAIABACFaBACEAQAhWwEAgAEAIQkDAACfAQAgQgIAAAABRwQAAAABSEAAAAABTEAAAAABWAEAAAABWQEAAAABWgQAAAABWwEAAAABCwYAAIcBACBCAgAAAAFEAgAAAAFFAQAAAAFGAQAAAAFHAgAAAAFIQAAAAAFJIAAAAAFKIAAAAAFLBAAAAAFMQAAAAAECAAAABQAgEwAAvAEAIAMAAAAFACATAAC8AQAgFAAAuwEAIAEMAADDAQAwAgAAAAUAIAwAALsBACACAAAAmwEAIAwAALoBACAKQgIAgQEAIUQCAIEBACFFAQCAAQAhRgEAgAEAIUcCAIEBACFIQACCAQAhSSAAgwEAIUogAIMBACFLBACEAQAhTEAAggEAIQsGAACFAQAgQgIAgQEAIUQCAIEBACFFAQCAAQAhRgEAgAEAIUcCAIEBACFIQACCAQAhSSAAgwEAIUogAIMBACFLBACEAQAhTEAAggEAIQsGAACHAQAgQgIAAAABRAIAAAABRQEAAAABRgEAAAABRwIAAAABSEAAAAABSSAAAAABSiAAAAABSwQAAAABTEAAAAABBBMAALQBADBlAAC1AQAwZwAAtwEAIGsAAJcBADAEEwAAqAEAMGUAAKkBADBnAACrAQAgawAArAEAMAAAAwMAAL8BACAGAADAAQAgXQAAiQEAIAQDAAC_AQAgBAAAwQEAIEcAAIkBACBYAACJAQAgCkICAAAAAUQCAAAAAUUBAAAAAUYBAAAAAUcCAAAAAUhAAAAAAUkgAAAAAUogAAAAAUsEAAAAAUxAAAAAAQhCAgAAAAFHBAAAAAFIQAAAAAFMQAAAAAFYAQAAAAFZAQAAAAFaBAAAAAFbAQAAAAEJAwAAvQEAIEICAAAAAUhAAAAAAUxAAAAAAVkBAAAAAVwBAAAAAV0BAAAAAV4BAAAAAV8BAAAAAQIAAAABACATAADFAQAgCkICAAAAAUMCAAAAAUUBAAAAAUYBAAAAAUcCAAAAAUhAAAAAAUkgAAAAAUogAAAAAUsEAAAAAUxAAAAAAQMAAAAQACATAADFAQAgFAAAygEAIAsAAAAQACADAACmAQAgDAAAygEAIEICAIEBACFIQACCAQAhTEAAggEAIVkBAIABACFcAQCAAQAhXQEAjwEAIV4BAIABACFfAQCAAQAhCQMAAKYBACBCAgCBAQAhSEAAggEAIUxAAIIBACFZAQCAAQAhXAEAgAEAIV0BAI8BACFeAQCAAQAhXwEAgAEAIQkGAAC-AQAgQgIAAAABSEAAAAABTEAAAAABWQEAAAABXAEAAAABXQEAAAABXgEAAAABXwEAAAABAgAAAAEAIBMAAMsBACAKBAAAoAEAIEICAAAAAUMCAAAAAUcEAAAAAUhAAAAAAUxAAAAAAVgBAAAAAVkBAAAAAVoEAAAAAVsBAAAAAQIAAAALACATAADNAQAgAwAAABAAIBMAAMsBACAUAADRAQAgCwAAABAAIAYAAKcBACAMAADRAQAgQgIAgQEAIUhAAIIBACFMQACCAQAhWQEAgAEAIVwBAIABACFdAQCPAQAhXgEAgAEAIV8BAIABACEJBgAApwEAIEICAIEBACFIQACCAQAhTEAAggEAIVkBAIABACFcAQCAAQAhXQEAjwEAIV4BAIABACFfAQCAAQAhAwAAAAkAIBMAAM0BACAUAADUAQAgDAAAAAkAIAQAAJIBACAMAADUAQAgQgIAgQEAIUMCAIEBACFHBACQAQAhSEAAggEAIUxAAIIBACFYAQCPAQAhWQEAgAEAIVoEAIQBACFbAQCAAQAhCgQAAJIBACBCAgCBAQAhQwIAgQEAIUcEAJABACFIQACCAQAhTEAAggEAIVgBAI8BACFZAQCAAQAhWgQAhAEAIVsBAIABACEDAwYCBQAFBgwDAgQAAQYAAwMDBwIEAAEFAAQBAwgAAgMNAAYOAAAAAAUFAAoZAAsaAAwbAA0cAA4AAAAAAAUFAAoZAAsaAAwbAA0cAA4BBAABAQQAAQUFABMZABQaABUbABYcABcAAAAAAAUFABMZABQaABUbABYcABcCBAABBgADAgQAAQYAAwUFABwZAB0aAB4bAB8cACAAAAAAAAUFABwZAB0aAB4bAB8cACAHAgEIDwEJEgEKEwELFAENFgEOGAYPGQcQGwERHQYSHggVHwEWIAEXIQYdJAkeJQ8fJgMgJwMhKAMiKQMjKgMkLAMlLgYmLxAnMQMoMwYpNBEqNQMrNgMsNwYtOhIuOxgvPAIwPQIxPgIyPwIzQAI0QgI1RAY2RRk3RwI4SQY5Sho6SwI7TAI8TQY9UBs-USE"
-}
-config.compilerWasm = {
-  getRuntime: async () => require('./query_compiler_fast_bg.js'),
-  getQueryCompilerWasmModule: async () => {
-    const loader = (await import('#wasm-compiler-loader')).default
-    const compiler = (await loader).default
-    return compiler
+  "generator": {
+    "name": "client",
+    "provider": {
+      "fromEnvVar": null,
+      "value": "prisma-client-js"
+    },
+    "output": {
+      "value": "/Users/keshavverma/Desktop/coding/PROJECTS/E-commerce/E-commerce/src/generated/prisma",
+      "fromEnvVar": null
+    },
+    "config": {
+      "engineType": "library"
+    },
+    "binaryTargets": [
+      {
+        "fromEnvVar": null,
+        "value": "darwin-arm64",
+        "native": true
+      }
+    ],
+    "previewFeatures": [],
+    "sourceFilePath": "/Users/keshavverma/Desktop/coding/PROJECTS/E-commerce/E-commerce/prisma/schema.prisma",
+    "isCustomOutput": true
   },
-  importName: './query_compiler_fast_bg.js',
+  "relativeEnvPaths": {
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../../.env"
+  },
+  "relativePath": "../../../prisma",
+  "clientVersion": "6.19.3",
+  "engineVersion": "c2990dca591cba766e3b7ef5d9e8a84796e47ab7",
+  "datasourceNames": [
+    "db"
+  ],
+  "activeProvider": "postgresql",
+  "postinstall": false,
+  "inlineDatasources": {
+    "db": {
+      "url": {
+        "fromEnvVar": "DATABASE_URL",
+        "value": null
+      }
+    }
+  },
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum UserRole {\n  CUSTOMER\n  ADMIN\n}\n\nenum OrderStatus {\n  PENDING\n  CONFIRMED\n  SHIPPED\n  DELIVERED\n  CANCELLED\n}\n\nenum PaymentStatus {\n  PENDING\n  PAID\n  FAILED\n  REFUNDED\n}\n\nenum DeliveryStatus {\n  PENDING\n  OUT_FOR_DELIVERY\n  DELIVERED\n}\n\nmodel User {\n  id          String   @id @default(uuid())\n  firstName   String\n  lastName    String?\n  email       String   @unique\n  password    String\n  role        UserRole @default(CUSTOMER)\n  phoneNumber String?\n\n  addresses     Address[]\n  cart          Cart?\n  orders        Order[]\n  notifications Notification[]\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel Address {\n  id          String @id @default(uuid())\n  fullName    String\n  phoneNumber String\n  street      String\n  city        String\n  state       String\n  country     String\n  postalCode  String\n\n  orders Order[]\n\n  userId String\n  user   User   @relation(fields: [userId], references: [id])\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel Product {\n  id          String  @id @default(uuid())\n  name        String\n  description String?\n  price       Decimal @db.Decimal(10, 2)\n\n  inventory Inventory?\n\n  cartItems  CartItem[]\n  orderItems OrderItem[]\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel Inventory {\n  id       String @id @default(uuid())\n  quantity Int    @default(0)\n\n  productId String  @unique\n  product   Product @relation(fields: [productId], references: [id])\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel Cart {\n  id String @id @default(uuid())\n\n  items CartItem[]\n\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id])\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel CartItem {\n  id       String @id @default(uuid())\n  quantity Int    @default(1)\n\n  productId String\n  product   Product @relation(fields: [productId], references: [id])\n  cartId    String\n  cart      Cart    @relation(fields: [cartId], references: [id])\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@unique([cartId, productId])\n}\n\nmodel Order {\n  id            String        @id @default(uuid())\n  orderStatus   OrderStatus   @default(PENDING)\n  paymentStatus PaymentStatus @default(PENDING)\n\n  totalAmount Decimal @db.Decimal(10, 2)\n\n  items    OrderItem[]\n  delivery Delivery?\n\n  userId String\n  user   User   @relation(fields: [userId], references: [id])\n\n  addressId String\n  address   Address @relation(fields: [addressId], references: [id])\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel OrderItem {\n  id       String  @id @default(uuid())\n  quantity Int\n  price    Decimal @db.Decimal(10, 2)\n\n  orderId   String\n  order     Order   @relation(fields: [orderId], references: [id])\n  productId String\n  product   Product @relation(fields: [productId], references: [id])\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel Delivery {\n  id             String         @id @default(uuid())\n  trackingNumber String?        @unique\n  deliveryStatus DeliveryStatus @default(PENDING)\n\n  arrivalDate DateTime?\n  deliveredAt DateTime?\n\n  orderId String @unique\n  order   Order  @relation(fields: [orderId], references: [id])\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel Notification {\n  id      String @id @default(uuid())\n  title   String\n  message String\n\n  isRead Boolean @default(false)\n\n  userId String\n  user   User   @relation(fields: [userId], references: [id])\n\n  createdAt DateTime @default(now())\n}\n",
+  "inlineSchemaHash": "5ba04cbecae061f23fc6b18a9d0c1592b3f6288615c888605ffe86be32936747",
+  "copyEngine": true
 }
-if (typeof globalThis !== 'undefined' && globalThis['DEBUG'] || (typeof process !== 'undefined' && process.env && process.env.DEBUG) || undefined) {
-  Debug.enable(typeof globalThis !== 'undefined' && globalThis['DEBUG'] || (typeof process !== 'undefined' && process.env && process.env.DEBUG) || undefined)
+config.dirname = '/'
+
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"firstName\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"lastName\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"email\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"password\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"role\",\"kind\":\"enum\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"UserRole\",\"nativeType\":null,\"default\":\"CUSTOMER\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"phoneNumber\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"addresses\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Address\",\"nativeType\":null,\"relationName\":\"AddressToUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"cart\",\"kind\":\"object\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Cart\",\"nativeType\":null,\"relationName\":\"CartToUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"orders\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Order\",\"nativeType\":null,\"relationName\":\"OrderToUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"notifications\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Notification\",\"nativeType\":null,\"relationName\":\"NotificationToUser\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":true}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Address\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"fullName\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"phoneNumber\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"street\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"city\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"state\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"country\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"postalCode\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"orders\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Order\",\"nativeType\":null,\"relationName\":\"AddressToOrder\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"userId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"user\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"AddressToUser\",\"relationFromFields\":[\"userId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":true}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Product\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"name\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"description\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"price\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Decimal\",\"nativeType\":[\"Decimal\",[\"10\",\"2\"]],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"inventory\",\"kind\":\"object\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Inventory\",\"nativeType\":null,\"relationName\":\"InventoryToProduct\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"cartItems\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"CartItem\",\"nativeType\":null,\"relationName\":\"CartItemToProduct\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"orderItems\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"OrderItem\",\"nativeType\":null,\"relationName\":\"OrderItemToProduct\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":true}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Inventory\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"quantity\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"nativeType\":null,\"default\":0,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"productId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"product\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Product\",\"nativeType\":null,\"relationName\":\"InventoryToProduct\",\"relationFromFields\":[\"productId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":true}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Cart\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"items\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"CartItem\",\"nativeType\":null,\"relationName\":\"CartToCartItem\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"userId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"user\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"CartToUser\",\"relationFromFields\":[\"userId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":true}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"CartItem\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"quantity\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Int\",\"nativeType\":null,\"default\":1,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"productId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"product\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Product\",\"nativeType\":null,\"relationName\":\"CartItemToProduct\",\"relationFromFields\":[\"productId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"cartId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"cart\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Cart\",\"nativeType\":null,\"relationName\":\"CartToCartItem\",\"relationFromFields\":[\"cartId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":true}],\"primaryKey\":null,\"uniqueFields\":[[\"cartId\",\"productId\"]],\"uniqueIndexes\":[{\"name\":null,\"fields\":[\"cartId\",\"productId\"]}],\"isGenerated\":false},\"Order\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"orderStatus\",\"kind\":\"enum\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"OrderStatus\",\"nativeType\":null,\"default\":\"PENDING\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"paymentStatus\",\"kind\":\"enum\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"PaymentStatus\",\"nativeType\":null,\"default\":\"PENDING\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"totalAmount\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Decimal\",\"nativeType\":[\"Decimal\",[\"10\",\"2\"]],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"items\",\"kind\":\"object\",\"isList\":true,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"OrderItem\",\"nativeType\":null,\"relationName\":\"OrderToOrderItem\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"delivery\",\"kind\":\"object\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Delivery\",\"nativeType\":null,\"relationName\":\"DeliveryToOrder\",\"relationFromFields\":[],\"relationToFields\":[],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"userId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"user\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"OrderToUser\",\"relationFromFields\":[\"userId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"addressId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"address\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Address\",\"nativeType\":null,\"relationName\":\"AddressToOrder\",\"relationFromFields\":[\"addressId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":true}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"OrderItem\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"quantity\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Int\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"price\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Decimal\",\"nativeType\":[\"Decimal\",[\"10\",\"2\"]],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"orderId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"order\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Order\",\"nativeType\":null,\"relationName\":\"OrderToOrderItem\",\"relationFromFields\":[\"orderId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"productId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"product\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Product\",\"nativeType\":null,\"relationName\":\"OrderItemToProduct\",\"relationFromFields\":[\"productId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":true}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Delivery\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"trackingNumber\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":true,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"deliveryStatus\",\"kind\":\"enum\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DeliveryStatus\",\"nativeType\":null,\"default\":\"PENDING\",\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"arrivalDate\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"deliveredAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":false,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"orderId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"order\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"Order\",\"nativeType\":null,\"relationName\":\"DeliveryToOrder\",\"relationFromFields\":[\"orderId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":true}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false},\"Notification\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"title\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"message\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"isRead\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"Boolean\",\"nativeType\":null,\"default\":false,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"userId\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":true,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"user\",\"kind\":\"object\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"User\",\"nativeType\":null,\"relationName\":\"NotificationToUser\",\"relationFromFields\":[\"userId\"],\"relationToFields\":[\"id\"],\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false}},\"enums\":{\"UserRole\":{\"values\":[{\"name\":\"CUSTOMER\",\"dbName\":null},{\"name\":\"ADMIN\",\"dbName\":null}],\"dbName\":null},\"OrderStatus\":{\"values\":[{\"name\":\"PENDING\",\"dbName\":null},{\"name\":\"CONFIRMED\",\"dbName\":null},{\"name\":\"SHIPPED\",\"dbName\":null},{\"name\":\"DELIVERED\",\"dbName\":null},{\"name\":\"CANCELLED\",\"dbName\":null}],\"dbName\":null},\"PaymentStatus\":{\"values\":[{\"name\":\"PENDING\",\"dbName\":null},{\"name\":\"PAID\",\"dbName\":null},{\"name\":\"FAILED\",\"dbName\":null},{\"name\":\"REFUNDED\",\"dbName\":null}],\"dbName\":null},\"DeliveryStatus\":{\"values\":[{\"name\":\"PENDING\",\"dbName\":null},{\"name\":\"OUT_FOR_DELIVERY\",\"dbName\":null},{\"name\":\"DELIVERED\",\"dbName\":null}],\"dbName\":null}},\"types\":{}}")
+defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
+config.engineWasm = undefined
+config.compilerWasm = undefined
+
+config.injectableEdgeEnv = () => ({
+  parsed: {
+    DATABASE_URL: typeof globalThis !== 'undefined' && globalThis['DATABASE_URL'] || typeof process !== 'undefined' && process.env && process.env.DATABASE_URL || undefined
+  }
+})
+
+if (typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined) {
+  Debug.enable(typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined)
 }
 
 const PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
+

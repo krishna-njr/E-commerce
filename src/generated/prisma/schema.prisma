@@ -5,53 +5,183 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum DeliveryStatus {
+  PENDING
+  OUT_FOR_DELIVERY
+  DELIVERED
 }
 
 model User {
-  id               Int       @id @default(autoincrement())
-  email            String    @unique
-  name             String
-  addedAt          DateTime  @default(now())
-  nickname         String?
-  phone_number     String
-  shipping_address String
-  updatedAt        DateTime  @updatedAt
-  order            Order[]
-  product          Product[]
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String?
+  email       String   @unique
+  password    String
+  role        UserRole @default(CUSTOMER)
+  phoneNumber String?
+
+  addresses     Address[]
+  cart          Cart?
+  orders        Order[]
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Address {
+  id          String @id @default(uuid())
+  fullName    String
+  phoneNumber String
+  street      String
+  city        String
+  state       String
+  country     String
+  postalCode  String
+
+  orders Order[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  addedAt     DateTime @default(now())
-  userId      Int
-  description String?
+  id          String  @id @default(uuid())
   name        String
-  price       BigInt
-  type        String
-  quantity    BigInt?
-  updatedAt   DateTime @updatedAt
-  order       Order[]
-  user        User     @relation(fields: [userId], references: [id])
+  description String?
+  price       Decimal @db.Decimal(10, 2)
+
+  inventory Inventory?
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Inventory {
+  id       String @id @default(uuid())
+  quantity Int    @default(0)
+
+  productId String  @unique
+  product   Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cart {
+  id String @id @default(uuid())
+
+  items CartItem[]
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id       String @id @default(uuid())
+  quantity Int    @default(1)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
 }
 
 model Order {
-  id              Int      @id @default(autoincrement())
-  userId          Int
-  productId       Int
-  address         String
-  details         String
-  quantity        Int
-  addedAt         DateTime @default(now())
-  payment_status  Boolean
-  shipping_status Boolean
-  total_price     BigInt
-  updatedAt       DateTime @updatedAt
-  product         Product  @relation(fields: [productId], references: [id])
-  user            User     @relation(fields: [userId], references: [id])
+  id            String        @id @default(uuid())
+  orderStatus   OrderStatus   @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+
+  totalAmount Decimal @db.Decimal(10, 2)
+
+  items    OrderItem[]
+  delivery Delivery?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  addressId String
+  address   Address @relation(fields: [addressId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-enum Roles {
-  USER
-  SELLER
-  ADMIN
+model OrderItem {
+  id       String  @id @default(uuid())
+  quantity Int
+  price    Decimal @db.Decimal(10, 2)
+
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Delivery {
+  id             String         @id @default(uuid())
+  trackingNumber String?        @unique
+  deliveryStatus DeliveryStatus @default(PENDING)
+
+  arrivalDate DateTime?
+  deliveredAt DateTime?
+
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id      String @id @default(uuid())
+  title   String
+  message String
+
+  isRead Boolean @default(false)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
 }
