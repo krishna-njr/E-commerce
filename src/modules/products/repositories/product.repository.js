@@ -1,22 +1,23 @@
 import { prisma } from "../../../../clients/pg-client.js";
+import AppError from "../../../../utils/AppError.js";
 
 export const getAllProduct = async () => {
   try {
     return await prisma.product.findMany();
   } catch (err) {
-    console.error("Database Error in getAllProduct:", err);
-    throw err;
+    console.error("Database Error in getAllProduct:", err.message);
+    throw new AppError(`Database Error in getAllProduct : ${err.message}`)
   }
 };
 
-export const filterProduct = async (whereClause) => {
+export const filterProduct = async (conditions) => {
   try {
     return await prisma.product.findMany({
-      where: whereClause,
+      where: conditions,
     });
   } catch (err) {
-    console.error("Database Error in filterProduct:", err);
-    throw err;
+    console.error("Database Error in filterProduct:", err.message);
+    throw new AppError(`Database Error in filterProduct : ${err.message}`)
   }
 };
 
@@ -27,8 +28,8 @@ export const getPaginated = async (skip = 0, take = 10) => {
       take: take,
     });
   } catch (err) {
-    console.error("Database Error in getPaginated:", err);
-    throw err;
+    console.error("Database Error in getPaginated: ", err,message);
+    throw new AppError(`Database Error in getPaginated : ${err.message}`)
   }
 };
 
@@ -42,8 +43,8 @@ export const searchProduct = async (searchName) => {
       },
     });
   } catch (err) {
-    console.error("Database Error in searchProduct:", err);
-    throw err;
+    console.error("Database Error in searchProduct:", err.message);
+    throw new AppError(`Database Error in searchProduct : ${err.message}`)
   }
 };
 
@@ -60,7 +61,7 @@ export const getProductsSorted = async (
       },
     });
   } catch (err) {
-    console.error(`Database Error in getProductsSorted (${direction}):`, err);
-    throw err;
+    console.error(`Database Error in getProductsSorted : `, err.message);
+    throw new AppError(`Database Error in getProductsSorted : ${err.message}`)
   }
 };
