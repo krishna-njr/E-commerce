@@ -1,69 +1,54 @@
 import { prisma } from "../../../../clients/pg-client.js";
+import AppError from "../../../../utils/AppError.js";
 
-/**
- * Fetch all products without filters
- */
 export const getAllProduct = async () => {
   try {
     return await prisma.product.findMany();
   } catch (err) {
-    // Log internally for debugging, then rethrow for the Service layer to catch
-    console.error("Database Error in getAllProduct:", err);
-    throw err;
+    console.error("Database Error in getAllProduct:", err.message);
+    throw new AppError(`Database Error in getAllProduct : ${err.message}`)
   }
 };
 
-/**
- * Filter products based on a structured Prisma where clause
- */
-export const filterProduct = async (whereClause) => {
+export const filterProduct = async (conditions) => {
   try {
     return await prisma.product.findMany({
-      where: whereClause,
+      where: conditions,
     });
   } catch (err) {
-    console.error("Database Error in filterProduct:", err);
-    throw err;
+    console.error("Database Error in filterProduct:", err.message);
+    throw new AppError(`Database Error in filterProduct : ${err.message}`)
   }
 };
 
-/**
- * Dynamic pagination for products
- */
 export const getPaginated = async (skip = 0, take = 10) => {
   try {
     return await prisma.product.findMany({
-      skip: Number(skip),
-      take: Number(take),
+      skip: skip,
+      take: take,
     });
   } catch (err) {
-    console.error("Database Error in getPaginated:", err);
-    throw err;
+    console.error("Database Error in getPaginated: ", err, message);
+    throw new AppError(`Database Error in getPaginated : ${err.message}`)
   }
 };
 
-/**
- * Search products by name (using contains for a looser, more realistic search)
- */
 export const searchProduct = async (searchName) => {
   try {
     return await prisma.product.findMany({
       where: {
         name: {
           contains: searchName,
-          mode: "insensitive", // Case-insensitive search
+          mode: 'insensitive',
         },
       },
     });
   } catch (err) {
-    console.error("Database Error in searchProduct:", err);
-    throw err;
+    console.error("Database Error in searchProduct:", err.message);
+    throw new AppError(`Database Error in searchProduct : ${err.message}`)
   }
 };
 
-/**
- * Sort products dynamically
- */
 export const getProductsSorted = async (
   type,
   sortByField = "id",
@@ -77,7 +62,88 @@ export const getProductsSorted = async (
       },
     });
   } catch (err) {
-    console.error(`Database Error in getProductsSorted (${direction}):`, err);
-    throw err;
+    console.error(`Database Error in getProductsSorted : `, err.message);
+    throw new AppError(`Database Error in getProductsSorted : ${err.message}`)
+  }
+};
+
+
+
+// POST    /products       # Add a product
+// GET     /products       # Get all products
+// GET     /products/:id   # Get products by ID
+// PATCH   /products/:id   # Editing a product
+// DELETE  /products/:id   # Deleting a product
+
+
+
+export const addProduct = async ({ name, description, price }) => {
+  try {
+    return await prisma.product.create({
+      data: {
+        name: name,
+        description: description,
+        price: price,
+
+        inventory: {
+          create: {}
+        },
+
+        // cartItems: {
+        //   create: [], 
+        // },
+
+        // orderItems: {
+        //   create: [], 
+        // }, 
+
+      }
+    });
+  } catch (err) {
+    console.error(`Database Error in addProduct : `, err.message);
+    throw new AppError(`Database Error in addProduct : ${err.message}`)
+  }
+};
+
+export const getProductById = async (productId) => {
+  try {
+    return await prisma.product.findUnique({
+      where: {
+        id: productId
+      },
+    });
+  } catch (err) {
+    console.error("Database Error in getProductById:", err.message);
+    throw new AppError(`Database Error in getProductById : ${err.message}`)
+  }
+};
+
+
+export const deleteProductById = async (productId) => {
+  try {
+    return await prisma.product.delete({
+      where: {
+        id: productId
+      },
+    });
+  } catch (err) {
+    console.error("Database Error in deleteProductById:", err.message);
+    throw new AppError(`Database Error in deleteProductById : ${err.message}`)
+  }
+};
+
+export const editProductById = async (productId, productDetails) => {
+  try {
+    return await prisma.product.update({
+      where: {
+        id: productId
+      },
+      data: {
+        ...productDetails
+      }
+    });
+  } catch (err) {
+    console.error("Database Error in deleteProductById:", err.message);
+    throw new AppError(`Database Error in deleteProductById : ${err.message}`)
   }
 };

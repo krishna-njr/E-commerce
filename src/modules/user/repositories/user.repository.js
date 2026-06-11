@@ -1,10 +1,14 @@
 import { prisma } from "../../../../clients/pg-client.js";
+import AppError from "../../../../utils/AppError.js";
 
 export const findUserById = async (userId) =>{
 
   try{
     const user = prisma.user.findUnique({
       where : {userId}, 
+      omit: {
+        password : true, 
+      }
     }); 
 
     return user; 
@@ -18,11 +22,26 @@ export const findUserByEmail = async (email) =>{
   try{
     const user = prisma.user.findUnique({
       where : {email}, 
+      omit: {
+        password : true, 
+      }
     }); 
 
     return user; 
   }catch(err){
     throw new Error('Database error in findUserByEmail ', err.message);
+  }
+}; 
+
+export const getUserWithEmailAndPassword = async (email) =>{
+  try{
+    const user = prisma.user.findUnique({
+      where : {email}, 
+    }); 
+
+    return user; 
+  }catch(err){
+    throw new Error('Database error in getUserWithEmailAndPassword ', err.message);
   }
 }; 
 
@@ -32,11 +51,15 @@ export const createUser = async (userData) => {
       const user = await tx.user.create({
         data: {
           email: userData.email, 
-          name: userData.name, 
+          fullName: userData.name, 
           password: userData.password, // passing hash password from service. 
           phoneNumber: userData.phoneNumber, 
           role : userData.role, 
-          status: 'active', // for now setting it default to 'active'
+          
+          // status: 'ACTIVE', // for now setting it default to 'active'
+        }, 
+        omit: {
+          password: true, 
         }
       }); 
 
@@ -44,9 +67,28 @@ export const createUser = async (userData) => {
         data: {
           userId : user.id,
         }
-      }); 
-    }); 2
+      });
+      
+      return user; 
+    }); 
   }catch(err){
-    throw new Error('Database error in createUser', err.message); 
+    console.log(err.message)
+    throw new Error(`Database error in creating user : ${err.message}`); 
+  }
+}; 
+
+
+export const updateUserById = async ({userId, userDetails}) => {
+  try{
+    const updatedUser = await prisma.user.update({
+      where: {id : userId}, 
+      data: {
+        ...userDetails
+      }
+    }); 
+
+    return updatedUser; 
+  }catch(err){
+    throw new AppError(`Database error in updating user ${err.message}`, 500)
   }
 }

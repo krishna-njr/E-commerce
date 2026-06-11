@@ -1,22 +1,16 @@
+import AppError from "../../../../utils/AppError.js";
 import * as productRepository from "../repositories/product.repository.js";
 
-class BusinessError extends Error {
-  constructor(message, statusCode = 400) {
-    super(message);
-    this.statusCode = statusCode;
-  }
-}
 export const getAllProductsService = async () => {
   try {
     const products = await productRepository.getAllProduct();
     if (!products || products.length === 0) {
-      throw new BusinessError("No products found in the database", 404);
+      throw new AppError("No products found in the database", 404);
     }
     return products;
   } catch (err) {
-    // If it's already a BusinessError, pass it up; otherwise wrap generic DB errors
-    if (err instanceof BusinessError) throw err;
-    throw new BusinessError(
+    if (err instanceof AppError) throw err;
+    throw new AppError(
       "Failed to fetch products due to a server error",
       500,
     );
@@ -25,22 +19,13 @@ export const getAllProductsService = async () => {
 
 export const filterProductsService = async (queryParams) => {
   try {
-    const whereClause = {};
-
-    if (queryParams.category) {
-      whereClause.category = queryParams.category;
+    if (queryParams.length() === 0) {
+      throw new AppError('Filter Condition are not passed', 400);
     }
-    if (queryParams.minPrice || queryParams.maxPrice) {
-      whereClause.price = {};
-      if (queryParams.minPrice)
-        whereClause.price.gte = Number(queryParams.minPrice);
-      if (queryParams.maxPrice)
-        whereClause.price.lte = Number(queryParams.maxPrice);
-    }
-
-    return await productRepository.filterProduct(whereClause);
+    return await productRepository.filterProduct(queryParams);
   } catch (err) {
-    throw new BusinessError(
+    if (err instanceof AppError) throw err;
+    throw new AppError(
       "Filtering failed. Please check your query parameters.",
       400,
     );
@@ -49,26 +34,24 @@ export const filterProductsService = async (queryParams) => {
 
 export const getPaginatedProductsService = async (page = 1, limit = 10) => {
   try {
-    const parsedPage = Math.max(1, parseInt(page));
-    const parsedLimit = Math.max(1, parseInt(limit));
-    const skip = (parsedPage - 1) * parsedLimit;
+    const skip = (page - 1) * limit;
 
-    return await productRepository.getPaginated(skip, parsedLimit);
+    return await productRepository.getPaginated(skip, limit);
   } catch (err) {
-    throw new BusinessError("Failed to load paginated products", 500);
+    throw new AppError("Failed to load paginated products", 500);
   }
 };
 
-export const searchProductService = async (searchName) => {
+export const searchProductService = async (productName) => {
   try {
-    if (!searchName || searchName.trim() === "") {
-      throw new BusinessError("Search query cannot be empty", 400);
+    if (!productName) {
+      throw new AppError("Search query cannot be empty", 400);
     }
 
-    return await productRepository.searchProduct(searchName.trim());
+    return await productRepository.searchProduct(productName);
   } catch (err) {
-    if (err instanceof BusinessError) throw err;
-    throw new BusinessError("An error occurred during search", 500);
+    if (err instanceof AppError) throw err;
+    throw new AppError("An error occurred during search", 500);
   }
 };
 
@@ -79,21 +62,81 @@ export const getSortedProductsService = async (
 ) => {
   try {
     if (!type) {
-      throw new BusinessError("Product type is required for sorting", 400);
+      throw new AppError("Product type is required for sorting", 400);
     }
 
-    const allowedSortFields = ["price", "createdAt", "id", "name"];
-    const safeSortField = allowedSortFields.includes(sortBy) ? sortBy : "id";
-
-    const safeOrder = order.toLowerCase() === "asc" ? "asc" : "desc";
+    // ["price", "createdAt", "id", "name"];
 
     return await productRepository.getProductsSorted(
       type,
-      safeSortField,
-      safeOrder,
+      sortBy,
+      order,
     );
   } catch (err) {
-    if (err instanceof BusinessError) throw err;
-    throw new BusinessError("Failed to retrieve sorted products", 500);
+    if (err instanceof AppError) throw err;
+    throw new AppError("Failed to retrieve sorted products", 500);
   }
 };
+
+export const getProductWithIdService = async (productId) => {
+  try {
+    if (!productId) {
+      throw new AppError("Product id is required to get product", 400);
+    }
+
+    return await productRepository.getProductById(productId);
+
+  } catch (err) {
+    if (err instanceof AppError) throw err;
+    throw new AppError("Failed to retrieve product", 500);
+  }
+}
+
+
+export const addProductService = async (productDetails) => {
+  try {
+    if (!productDetails.description || !productDetails.name && !productDetails.price) {
+      throw new AppError("Product details is required to add product", 400);
+    }
+
+    return await productRepository.addProduct(productDetails);
+
+  } catch (err) {
+    // console.log(err.message);
+    if (err instanceof AppError) throw err;
+    throw new AppError("Failed to add product", 500);
+  }
+}
+
+
+
+export const editProductService = async (details) => {
+  try {
+
+    const { id, ...productDetails } = details;
+    if (!id) {
+      throw new AppError("Product id is required to edit product", 400);
+    }
+
+    return await productRepository.editProductById(id, productDetails);
+
+  } catch (err) {
+    if (err instanceof AppError) throw err;
+    throw new AppError("Failed to edit product", 500);
+  }
+}
+
+export const deleteProductService = async (productId) => {
+  try {
+
+    if (!productId) {
+      throw new AppError("Product id is required to delete product", 400);
+    }
+
+    return await productRepository.deleteProductById(productId);
+
+  } catch (err) {
+    if (err instanceof AppError) throw err;
+    throw new AppError("Failed to delete product", 500);
+  }
+}
