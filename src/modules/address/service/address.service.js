@@ -52,12 +52,14 @@ export const getAddressByIdService = async (addressId) => {
    }
 };
 
-export const updateAddressService = async (addressId) => {
+export const updateAddressService = async (addressId, addressDetails) => {
    try {
       if (!addressId) {
          throw new AppError('Missing addressId', 409);
       }
-      const address = await updateAddress(addressId);
+      console.log('insdie address serivce', addressId, addressDetails);
+
+      const address = await updateAddress(addressId, addressDetails);
 
       if (!address) {
          throw new AppError(`Address Not Found`, 404)

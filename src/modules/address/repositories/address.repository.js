@@ -53,12 +53,19 @@ export const getAddressById = async (id) => {
   }
 };
 
-export const updateAddress = async (addressDetails) => {
+export const updateAddress = async (id, addressDetails) => {
+  console.log(`insdie address repo :`, id, addressDetails);
   try {
     const updatedAddress = await prisma.address.update({
       where: { id },
       data: {
-        ...addressDetails,
+        fullName: deleteAddress.fullName,
+        street: addressDetails.street,
+        city: addressDetails.street,
+        state: addressDetails.state,
+        country: addressDetails.country,
+        postalCode: addressDetails.postalCode,
+        phoneNumber: addressDetails.phoneNumber
       }
     })
   } catch (error) {
