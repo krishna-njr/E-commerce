@@ -1,7 +1,7 @@
-createNotification();
+export const createNotificationController = async (req, res) => {};
 
-getNotifications();
+export const getNotificationsController = async (req, res) => {};
 
-markAsRead();
+export const markAsReadController = async (req, res) => {};
 
-deleteNotification();
+export const deleteNotificationController = async (req, res) => {};

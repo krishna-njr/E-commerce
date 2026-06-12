@@ -1,7 +1,7 @@
-createNotification();
+export const createNotification = () => {};
 
-getNotifications();
+export const getNotifications = () => {};
 
-markAsRead();
+export const markAsRead = () => {};
 
-deleteNotification();
+export const deleteNotification = () => {};
