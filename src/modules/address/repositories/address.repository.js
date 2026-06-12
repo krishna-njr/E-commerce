@@ -1,6 +1,6 @@
-import { prisma } from "../../../../clients/pg-client";
-import AppError from "../../../../utils/AppError";
-import { getAddressesService } from "../service/address.service";
+import { prisma } from "../../../../clients/pg-client.js";
+import AppError from "../../../../utils/AppError.js";
+import { getAddressesService } from "../service/address.service.js";
 
 export const createAddress = async ({ fullName, street, city, state, country, postalCode, phoneNumber, userId }) => {
   try {
@@ -31,7 +31,7 @@ export const getAddresses = async (userId) => {
       where: {
         userId: userId,
       },
-      limit: 5,
+      take: 5,
     })
     return addresses;
   } catch (error) {
