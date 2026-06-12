@@ -5,6 +5,7 @@ import { router as userRoutes } from "./modules/user/route/user.route.js";
 import { router as publicProductRoutes } from "./modules/products/route/product.public.route.js";
 import { router as sellerProductRoutes } from "./modules/products/route/product.seller.route.js";
 import { router as orderRoutes } from "./modules/orders/route/order.route.js";
+import globalErrorMiddleware from "./shared/globalError.middleware.js";
 const app = express();
 
 app.use(express.json());
@@ -17,20 +18,6 @@ app.use("/api/v1/products", publicProductRoutes, sellerProductRoutes);
 
 app.use('/api/v1/orders', orderRoutes);
 
-// app.all('/test', (req, res) => {
-//   console.log(req.body);
-// })
-
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
-
-  console.error(`[Error] ${statusCode} - ${message}`, err.stack);
-
-  res.status(statusCode).json({
-    success: false,
-    message: message,
-  });
-});
+app.use(globalErrorMiddleware);
 
 export default app;

@@ -12,20 +12,7 @@ export const createOrder = async ({ userId, items, totalAmount, addressId = 2 })
           addressId: addressId,
           items: {
             create: items,
-          },
-
-          delivery: {
-            create: {},
-          },
-
-          user: {
-            create: {},
-          },
-
-          delivery: {
-            create: {},
-          },
-
+          }
         },
 
 

@@ -1,5 +1,5 @@
 import AppError from "../../../../utils/AppError.js";
-import { generateAccessToken } from "../../../../utils/generateToken.js";
+import { generateAccessToken, generateRefreshToken } from "../../../../utils/generateToken.js";
 import { comparePassword, hashPassword } from "../../../../utils/password.js";
 // import { sanitize } from "../../auth/services/auth.service.js";
 import {
@@ -19,16 +19,16 @@ export const registerUserService = async ({
 }) => {
   const userExist = await findUserByEmail(email);
   // console.log(userExist);
-  
+
   if (userExist) {
-    throw new AppError("Email already Exist", 400);
+    throw new AppError("Email already Exist", 409);
   }
 
   const hashedPassword = await hashPassword(password);
 
   // let hashedPassword = '345fgh4o34567'; 
   console.log('inside registerUserServices ', hashedPassword);
-  
+
 
   const user = await createUser({
     email,
@@ -38,7 +38,7 @@ export const registerUserService = async ({
     password: hashedPassword,
   });
 
-  return user; 
+  return user;
 };
 
 // ***************
@@ -54,11 +54,12 @@ export const loginUserService = async ({ email, password }) => {
     throw new AppError("Unauthorized ", 401);
   }
 
-  const token = generateAccessToken(user);
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
 
   // console.log('inside loginUserService : ', user); 
   const { password: _, ...sanitizeUser } = user;
-  return { user: sanitizeUser, token };
+  return { user: sanitizeUser, accessToken, refreshToken };
 };
 
 export const getUserDetailService = async (userId) => {
@@ -66,7 +67,7 @@ export const getUserDetailService = async (userId) => {
   if (!user) {
     throw new AppError("User not exist", 401);
   }
-  return user; 
+  return user;
 };
 
 
@@ -76,15 +77,15 @@ export const getUserDetailService = async (userId) => {
 
 
 export const updateUserDetailService = async (userDetails) => {
-  
-  const userId = userDetails.id; 
-  if(!userId){
-    throw new AppError("Id Required", 400); 
+
+  const userId = userDetails.id;
+  if (!userId) {
+    throw new AppError("Id Required", 400);
   }
 
-  const updatedUser = await updateUserById({userId, userDetails});
+  const updatedUser = await updateUserById({ userId, userDetails });
   if (!updatedUser) {
     throw new AppError("User not exist", 401);
   }
-  return updatedUser; 
+  return updatedUser;
 };

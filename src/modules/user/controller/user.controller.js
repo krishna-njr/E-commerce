@@ -16,15 +16,18 @@ export const registerUserController = asyncWrapper(async (req, res) => {
 });
 
 export const loginUserController = asyncWrapper(async (req, res) => {
-  const { user, token } = await loginUserService(req.body);
+  const { user, accessToken, refreshToken } = await loginUserService(req.body);
 
   return res.status(200).json({
     status: true,
     message: "Sucessfully login",
     data: {
-      user: user,
-      token: token,
-    }, // sanitize user
+      user: user, // sanitize user
+      token: {
+        accessToken,
+        refreshToken
+      },
+    },
   });
 });
 
@@ -40,8 +43,6 @@ export const getUserController = asyncWrapper(async (req, res) => {
 
 // getUsers();
 // getUserById();
-
 // updateUser();
 // deleteUser();
-
 // updateUserRole();
