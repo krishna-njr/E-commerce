@@ -1,4 +1,5 @@
 import { prisma } from "../../../../clients/pg-client.js";
+import AppError from "../../../../utils/AppError.js";
 
 export const createOrder = async ({ userId, items, totalAmount, addressId = 2 }) => {
   try {
@@ -9,7 +10,22 @@ export const createOrder = async ({ userId, items, totalAmount, addressId = 2 })
           userId: userId,
           totalAmount: totalAmount,
           addressId: addressId,
-          items: items,
+          items: {
+            create: items,
+          },
+
+          delivery: {
+            create: {},
+          },
+
+          user: {
+            create: {},
+          },
+
+          delivery: {
+            create: {},
+          },
+
         },
 
 
@@ -23,7 +39,8 @@ export const createOrder = async ({ userId, items, totalAmount, addressId = 2 })
       return order;
     });
   } catch (error) {
-    throw new appError(`Database Error in createOrderService: ${error.message}`)
+    console.log(error.message);
+    throw new AppError(`Database Error in createOrderService: ${error.message}`)
   }
 };
 

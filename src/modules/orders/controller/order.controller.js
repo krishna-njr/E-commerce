@@ -5,8 +5,10 @@ export const createOrderController = asyncWrapper(async (req, res) => {
 
   const userId = req.body.id;
   const items = req.body.items;
+  const totalAmount = req.body.totalAmount;
+  const addressId = req.body.addressId;
 
-  const createdOrder = await orderServices.createOrderService(userId, items);
+  const createdOrder = await orderServices.createOrderService({ userId, items, totalAmount, addressId });
 
   res.status(201).json({
     status: true,
