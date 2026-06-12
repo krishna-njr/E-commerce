@@ -1,6 +1,6 @@
-import { prisma } from "../../../../clients/pg-client";
-import AppError from "../../../../utils/AppError";
-import { getAddressesService } from "../service/address.service";
+import { prisma } from "../../../../clients/pg-client.js";
+import AppError from "../../../../utils/AppError.js";
+import { getAddressesService } from "../service/address.service.js";
 
 export const createAddress = async ({ fullName, street, city, state, country, postalCode, phoneNumber, userId }) => {
   try {
@@ -31,7 +31,7 @@ export const getAddresses = async (userId) => {
       where: {
         userId: userId,
       },
-      limit: 5,
+      take: 5,
     })
     return addresses;
   } catch (error) {
@@ -53,12 +53,19 @@ export const getAddressById = async (id) => {
   }
 };
 
-export const updateAddress = async (addressDetails) => {
+export const updateAddress = async (id, addressDetails) => {
+  console.log(`insdie address repo :`, id, addressDetails);
   try {
     const updatedAddress = await prisma.address.update({
       where: { id },
       data: {
-        ...addressDetails,
+        fullName: deleteAddress.fullName,
+        street: addressDetails.street,
+        city: addressDetails.street,
+        state: addressDetails.state,
+        country: addressDetails.country,
+        postalCode: addressDetails.postalCode,
+        phoneNumber: addressDetails.phoneNumber
       }
     })
   } catch (error) {
