@@ -1,0 +1,4 @@
+createInventory();
+getInventory();
+getInventoryByProductId();
+updateInventory();
