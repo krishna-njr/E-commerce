@@ -1,11 +1,11 @@
-createOrder();
+export const createOrder = () => {};
 
-getOrders();
+export const getOrders = () => {};
 
-getOrderById();
+export const getOrderById = (id) => {};
 
-updateOrderStatus();
+export const updateOrderStatus = (id, status) => {};
 
-updatePaymentStatus();
+export const updatePaymentStatus = (id, paymentStatus) => {};
 
-cancelOrder();
+export const cancelOrder = (id) => {};

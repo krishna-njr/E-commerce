@@ -1,11 +1,11 @@
-createOrder();
+export const createOrderController = async (req, res) => {};
 
-getOrders();
+export const getOrdersController = async (req, res) => {};
 
-getOrderById();
+export const getOrderByIdController = async (req, res) => {};
 
-updateOrderStatus();
+export const updateOrderStatusController = async (req, res) => {};
 
-updatePaymentStatus();
+export const updatePaymentStatusController = async (req, res) => {};
 
-cancelOrder();
+export const cancelOrderController = async (req, res) => {};

@@ -1,9 +1,9 @@
-createDelivery();
+export const createDeliveryService = () => {};
 
-getDeliveries();
+export const getDeliveriesService = () => {};
 
-getDeliveryById();
+export const getDeliveryByIdService = () => {};
 
-updateDelivery();
+export const updateDeliveryService = () => {};
 
-updateDeliveryStatus();
+export const updateDeliveryStatusService = () => {};
