@@ -1,9 +1,26 @@
 import { prisma } from "../../../../clients/pg-client.js";
 
-export const createOrder = async () => {
+export const createOrder = async ({ userId, items, totalAmount, addressId = 2 }) => {
   try {
     return await prisma.$transaction(async (tx) => {
       // Create the order
+      const order = tx.order.create({
+        data: {
+          userId: userId,
+          totalAmount: totalAmount,
+          addressId: addressId,
+          items: items,
+        },
+
+
+      })
+
+      // add in order_items; 
+
+      // inventory deduction: 
+
+
+      return order;
     });
   } catch (error) {
     throw new appError(`Database Error in createOrderService: ${error.message}`)
@@ -14,10 +31,12 @@ export const getOrders = async () => {
   try {
     return await prisma.order.findMany({
       include: {
-        orderItems: true,
+        items: true,
       },
     });
   } catch (error) {
+    console.log(error.message);
+
     throw new appError(`Database Error in getOrdersService : ${error.message}`);
   }
 };
@@ -26,7 +45,7 @@ export const getOrderById = async (id) => {
   try {
     return await prisma.order.findUnique({
       where: {
-        id: id,
+        userId: id,
       },
       include: {
         orderItems: true,

@@ -24,12 +24,12 @@ export const getOrdersService = async () => {
 
 };
 
-export const getOrderByIdService = (productId) => {
+export const getOrderByIdService = async (userId) => {
   try {
-    if (!productId) {
+    if (!userId) {
       throw new AppError('Missing Id', 400)
     }
-    const order = await getOrderById(productId);
+    const order = await getOrderById(userId);
 
     return order;
   } catch (error) {
@@ -38,12 +38,12 @@ export const getOrderByIdService = (productId) => {
   }
 };
 
-export const updateOrderStatusService = (productId, status) => {
+export const updateOrderStatusService = async (orderId, status) => {
   try {
-    if (!productId) {
+    if (!orderId) {
       throw new AppError('Missing Id', 400);
     }
-    const updatedOrder = await updateOrderStatus(productId, status);
+    const updatedOrder = await updateOrderStatus(orderId, status);
 
     return updatedOrder;
   } catch (error) {
@@ -52,12 +52,12 @@ export const updateOrderStatusService = (productId, status) => {
   }
 };
 
-export const updatePaymentStatusService = (productId, paymentStatus) => {
+export const updatePaymentStatusService = async (orderId, paymentStatus) => {
   try {
-    if (!productId) {
+    if (!orderId) {
       throw new AppError('Missing Id', 400);
     }
-    const updatedOrder = await updatePaymentStatus(productId, paymentStatus);
+    const updatedOrder = await updatePaymentStatus(orderId, paymentStatus);
 
     return updatedOrder;
   } catch (error) {
@@ -66,12 +66,12 @@ export const updatePaymentStatusService = (productId, paymentStatus) => {
   }
 };
 
-export const cancelOrderService = (productId) => {
+export const cancelOrderService = async (orderId) => {
   try {
-    if (!productId) {
+    if (!orderId) {
       throw new AppError('Missing Id', 400);
     }
-    const cancelledOrder = await cancelOrder(productId);
+    const cancelledOrder = await cancelOrder(orderId);
 
     return cancelledOrder;
   } catch (error) {

@@ -3,8 +3,6 @@ import * as orderServices from "../service/order.service.js";
 
 export const createOrderController = asyncWrapper(async (req, res) => {
 
-
-  // const userId = req.user.id; 
   const userId = req.body.id;
   const items = req.body.items;
 
