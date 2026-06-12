@@ -1,93 +1,81 @@
-import { prisma } from "../../../../clients/pg-client.js";
+import { cancelOrder, createOrder, getOrderById, getOrders, updateOrderStatus, updatePaymentStatus } from "../repositories/order.repository.js";
+import AppError from '../../../../utils/AppError.js';
 
-export const createOrderService = () => {
-    try{
-        return prima.$transaction(async (tx) => {
-            // 1. Create the order
-        }); 
+export const createOrderService = async ({ userId, items }) => {
+  try {
+    const order = await createOrder();
+  } catch (error) {
+    throw new AppError(`Order is not Created, ${error.message}`, 500)
+  }
+};
+
+export const getOrdersService = async () => {
+  try {
+    const orders = await getOrders();
+    if (orders.length < 1) {
+      throw new AppError(`Not Found`, 400);
     }
+
+    return orders;
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(`Failed to get orders details ${error.message}`, 500);
+  }
+
 };
 
-export const getOrdersService = () => {
-  // all the orders of the user :
+export const getOrderByIdService = (productId) => {
   try {
-    return prisma.order.findMany({
-      where: {
-        userId: 1,
-      },
-      include: {
-        orderItems: true,
-      },
-    });
+    if (!productId) {
+      throw new AppError('Missing Id', 400)
+    }
+    const order = await getOrderById(productId);
+
+    return order;
   } catch (error) {
-    throw new appError(`Database Error in getOrdersService : ${error.message}`);
+    if (error instanceof AppError) throw error
+    throw new AppError(`Failed to get order by id, ${error.message}`, 500);
   }
 };
 
-export const getOrderByIdService = (id) => {
+export const updateOrderStatusService = (productId, status) => {
   try {
-    return prisma.order.findUnique({
-      where: {
-        id: id,
-      },
-      include: {
-        orderItems: true,
-      },
-    });
+    if (!productId) {
+      throw new AppError('Missing Id', 400);
+    }
+    const updatedOrder = await updateOrderStatus(productId, status);
+
+    return updatedOrder;
   } catch (error) {
-    throw new appError(
-      `Database Error in getOrderByIdService : ${error.message}`,
-    );
+    if (error instanceof AppError) throw error;
+    throw new AppError(`Failed to update order staus ${error.message}`, 500);
   }
 };
 
-export const updateOrderStatusService = (id, status) => {
+export const updatePaymentStatusService = (productId, paymentStatus) => {
   try {
-    return prisma.order.update({
-      where: {
-        id: id,
-      },
-      data: {
-        status: status,
-      },
-    });
+    if (!productId) {
+      throw new AppError('Missing Id', 400);
+    }
+    const updatedOrder = await updatePaymentStatus(productId, paymentStatus);
+
+    return updatedOrder;
   } catch (error) {
-    throw new appError(
-      `Database Error in updateOrderStatusService : ${error.message}`,
-    );
+    if (error instanceof AppError) throw error;
+    throw new AppError(`Failed to update order staus ${error.message}`, 500);
   }
 };
 
-export const updatePaymentStatusService = (id, paymentStatus) => {
+export const cancelOrderService = (productId) => {
   try {
-    return prisma.order.update({
-      where: {
-        id: id,
-      },
-      data: {
-        paymentStatus: paymentStatus, // we have to check the field in the prisma schema.
-      },
-    });
-  } catch (error) {
-    throw new appError(
-      `Database Error in updatePaymentStatusService : ${error.message}`,
-    );
-  }
-};
+    if (!productId) {
+      throw new AppError('Missing Id', 400);
+    }
+    const cancelledOrder = await cancelOrder(productId);
 
-export const cancelOrderService = (id) => {
-  try {
-    return prisma.order.update({
-      where: {
-        id: id,
-      },
-      data: {
-        status: "cancelled", // we have to check the field in the prisma schema.
-      },
-    });
+    return cancelledOrder;
   } catch (error) {
-    throw new appError(
-      `Database Error in cancelOrderService : ${error.message}`,
-    );
+    if (error instanceof AppError) throw error;
+    throw new AppError(`Failed to update order staus ${error.message}`, 500);
   }
 };
