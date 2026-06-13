@@ -7,6 +7,7 @@ import { router as sellerProductRoutes } from "./modules/products/route/product.
 import { router as orderRoutes } from "./modules/orders/route/order.route.js";
 import globalErrorMiddleware from "./shared/globalError.middleware.js";
 import { router as addressRoutes } from "./modules/address/route/address.route.js";
+import { router as cartRoutes } from "./modules/cart/route/cart.route.js";
 
 const app = express();
 
@@ -18,9 +19,11 @@ app.use("/api/v1/users", userRoutes);
 
 app.use("/api/v1/products", publicProductRoutes, sellerProductRoutes);
 
-app.use('/api/v1/orders', orderRoutes);
+app.use("/api/v1/orders", orderRoutes);
 
-app.use('/api/v1/addresses', addressRoutes);
+app.use("/api/v1/addresses", addressRoutes);
+
+app.use("/api/v1/cart", cartRoutes);
 
 app.use(globalErrorMiddleware);
 
