@@ -2,7 +2,16 @@ import { prisma } from "../../../../clients/pg-client.js";
 import AppError from "../../../../utils/AppError.js";
 import { getAddressesService } from "../service/address.service.js";
 
-export const createAddress = async ({ fullName, street, city, state, country, postalCode, phoneNumber, userId }) => {
+export const createAddress = async ({
+  fullName,
+  street,
+  city,
+  state,
+  country,
+  postalCode,
+  phoneNumber,
+  userId,
+}) => {
   try {
     const address = await prisma.address.create({
       data: {
@@ -15,13 +24,13 @@ export const createAddress = async ({ fullName, street, city, state, country, po
         street,
 
         userId,
-      }
+      },
     });
 
     return address;
   } catch (error) {
     console.log(error.message);
-    throw new AppError(`Server Side error : ${error.message}`, 500);
+    throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
 
@@ -32,11 +41,11 @@ export const getAddresses = async (userId) => {
         userId: userId,
       },
       take: 5,
-    })
+    });
     return addresses;
   } catch (error) {
     console.log(error.message);
-    throw new AppError(`Server Side error : ${error.message}`, 500);
+    throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
 
@@ -44,12 +53,11 @@ export const getAddressById = async (id) => {
   try {
     const address = await prisma.address.findUnique({
       where: { id },
-    })
+    });
     return address;
-
   } catch (error) {
     console.log(error.message);
-    throw new AppError(`Server Side error : ${error.message}`, 500);
+    throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
 
@@ -65,12 +73,12 @@ export const updateAddress = async (id, addressDetails) => {
         state: addressDetails.state,
         country: addressDetails.country,
         postalCode: addressDetails.postalCode,
-        phoneNumber: addressDetails.phoneNumber
-      }
-    })
+        phoneNumber: addressDetails.phoneNumber,
+      },
+    });
   } catch (error) {
     console.log(error.message);
-    throw new AppError(`Server Side error : ${error.message}`, 500);
+    throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
 
@@ -83,7 +91,7 @@ export const deleteAddress = async (id) => {
     return deleteAddress;
   } catch (error) {
     console.log(error.message);
-    throw new AppError(`Server Side error : ${error.message}`, 500);
+    throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
 
@@ -92,6 +100,6 @@ export const deleteAddress = async (id) => {
 
 //   }catch(error){
 //     console.log(error.message);
-//     throw new AppError(`Server Side error : ${error.message}`, 500); 
+//     throw new AppError(`Internal Server Error : ${error.message}`, 500);
 //   }
 // };
