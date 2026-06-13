@@ -13,7 +13,7 @@ import {
 router.use(validateAuthentication);
 router.use(authorize("SELLER"));
 
-router.get("/seller", sellerController.getSellerProductsFiltered);
+router.get("/seller", sellerController.getSellerProductsController);
 
 router.post("/seller", sellerController.addProductController);
 

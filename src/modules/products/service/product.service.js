@@ -1,15 +1,16 @@
 import AppError from "../../../../utils/AppError.js";
 import * as productRepository from "../repositories/product.repository.js";
 
-export const getAllProductsService = async () => {
+export const getAllProductsService = async (limit) => {
   try {
-    const products = await productRepository.getAllProduct((limit = 10));
+    const products = await productRepository.getAllProduct(limit);
     if (!products || products.length === 0) {
       throw new AppError("No products found in the database", 404);
     }
     return products;
   } catch (err) {
     if (err instanceof AppError) throw err;
+    console.error("Error in getAllProductsService:", err.message); // *******************
     throw new AppError("Failed to fetch products due to a server error", 500);
   }
 };

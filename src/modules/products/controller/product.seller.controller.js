@@ -3,21 +3,24 @@ import * as productService from "../service/product.service.js";
 import successResponse from "../../../../utils/responseHelper.js";
 import AppError from "../../../../utils/appError.js";
 
-export const getSellerProducts = asyncWrapper(async (req, res) => {
+export const getSellerProductsController = asyncWrapper(async (req, res) => {
   // const sellerId = req.user.id;
-  const products = await productService.getAllProductsService(); // limit to 100 :  at services level
+  let limit = req.query.limit || 10; // Default limit to 10 if not provided
+  const products = await productService.getAllProductsService(limit); // limit to 100 :  at services level
   successResponse(res, products, "Seller Products", 200);
 });
 
-export const getSellerProductsFiltered = asyncWrapper(async (req, res) => {
-  const filters = {
-    ...req.query,
-    sellerId: req.user.id,
-  };
+export const getSellerProductsFilteredController = asyncWrapper(
+  async (req, res) => {
+    const filters = {
+      ...req.query,
+      sellerId: req.user.id,
+    };
 
-  const products = await productService.filterProductsService(filters);
-  successResponse(res, products, "Filtered Products", 200);
-});
+    const products = await productService.filterProductsService(filters);
+    successResponse(res, products, "Filtered Products", 200);
+  },
+);
 
 // POST    /products       # Add a product
 // GET     /products       # Get all products

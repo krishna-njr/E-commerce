@@ -6,6 +6,7 @@ export const getAllProduct = async (limit) => {
     const products = await prisma.product.findMany({
       take: limit,
     });
+    // console.log("Products retrieved from database:", products);
     return products;
   } catch (err) {
     console.error("Database Error in getAllProduct:", err.message);
