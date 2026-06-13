@@ -67,15 +67,16 @@ export const updateAddress = async (id, addressDetails) => {
     const updatedAddress = await prisma.address.update({
       where: { id },
       data: {
-        fullName: deleteAddress.fullName,
+        fullName: addressDetails.fullName,
         street: addressDetails.street,
-        city: addressDetails.street,
+        city: addressDetails.city,
         state: addressDetails.state,
         country: addressDetails.country,
         postalCode: addressDetails.postalCode,
         phoneNumber: addressDetails.phoneNumber,
       },
     });
+    return updatedAddress;
   } catch (error) {
     console.log(error.message);
     throw new AppError(`Internal Server Error : ${error.message}`, 500);

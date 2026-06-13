@@ -47,7 +47,7 @@ export const getInventoryByProductIdController = async (req, res) => {
 export const updateInventoryController = async (req, res) => {
   try {
     const { productId } = req.params;
-    const inventoryDetails = req.body;
+    const inventoryDetails = req.body; // quantity :
     const updatedInventory = await inventoryService.updateInventoryService(
       productId,
       inventoryDetails,
