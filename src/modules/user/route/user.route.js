@@ -20,7 +20,7 @@ router.get("/profile", validateAuthentication, getUserController);
 router.get(
   "/admin/profile",
   validateAuthentication,
-  authorize("admin"),
+  authorize("ADMIN"),
   (req, res) => {
     console.log("admin protected route : ", req.body);
   },

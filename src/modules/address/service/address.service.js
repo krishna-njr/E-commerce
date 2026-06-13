@@ -72,7 +72,7 @@ export const updateAddressService = async (addressId, addressDetails) => {
 
 };
 
-export const deleteAddressService = async () => {
+export const deleteAddressService = async (addressId) => {
    try {
       if (!addressId) {
          throw new AppError('Missing addressId', 409);

@@ -4,21 +4,23 @@ import * as sellerController from "../controller/product.seller.controller.js";
 // import { protect, authorizeSeller } from "../middleware/auth.middleware.js";
 
 const router = Router();
-
+import {
+  validateAuthentication,
+  authorize,
+} from "../middleware/product.middleware.js";
 
 // Protect all seller routes with authentication and role authorization middlewares
-// router.use(protect);
-// router.use(authorizeSeller);
+router.use(validateAuthentication);
+router.use(authorize("SELLER"));
 
-router.get("/seller", sellerController.getSellerProductsFiltered);
+router.get("/seller", sellerController.getSellerProductsController);
 
-router.post('/seller', sellerController.addProductController);
+router.post("/seller", sellerController.addProductController);
 
-router.get('/seller/:id', sellerController.getProductController);
+router.get("/seller/:id", sellerController.getProductController);
 
-router.delete('/seller/:id', sellerController.deleteProductController);
+router.delete("/seller/:id", sellerController.deleteProductController);
 
-router.patch('/seller/:id', sellerController.editProductController);
-
+router.patch("/seller/:id", sellerController.editProductController);
 
 export { router };
