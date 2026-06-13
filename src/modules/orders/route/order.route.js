@@ -1,18 +1,29 @@
 import { Router } from "express";
 import * as orderController from "../controller/order.controller.js";
+import {
+  authorize,
+  validateAuthentication,
+} from "../middleware/order.middleware.js";
 
 const router = Router();
 
-router.post('/', orderController.createOrderController);
+router.use(validateAuthentication);
 
-router.get('/', orderController.getOrdersController);
+router.use(authorize("CUSTOMER"));
 
-router.get('/:id', orderController.getOrderByIdController);
+router.post("/", orderController.createOrderController);
 
-router.patch('/:id/status', orderController.updateOrderStatusController);
+router.get("/", orderController.getOrdersController);
 
-router.patch('/:id/payment-status', orderController.updatePaymentStatusController);
+router.get("/:id", orderController.getOrderByIdController);
 
-router.delete('/:id', orderController.cancelOrderController);
+router.patch("/:id/status", orderController.updateOrderStatusController);
+
+router.patch(
+  "/:id/payment-status",
+  orderController.updatePaymentStatusController,
+);
+
+router.delete("/:id", orderController.cancelOrderController);
 
 export { router };
