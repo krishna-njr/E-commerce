@@ -4,7 +4,7 @@ import successResponse from "../../../../utils/responseHelper.js";
 
 export const getAllProducts = asyncWrapper(async (req, res) => {
   const products = await productService.getAllProductsService();
-  return successresponse(res, products, "Products retrieved successfully", 200);
+  return successResponse(res, products, "Products retrieved successfully", 200);
 });
 
 export const searchProducts = asyncWrapper(async (req, res) => {

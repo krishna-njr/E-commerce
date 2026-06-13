@@ -4,8 +4,8 @@ import successResponse from "../../../../utils/responseHelper.js";
 
 export const getCartController = async (req, res) => {
   try {
-    // const userId = req.user.id;
-    const userId = req.params.id;
+    const userId = req.user.id;
+    // const userId = req.params.id;
     // schema validation
     const cart = await cartService.getCartService(userId);
 
@@ -17,8 +17,8 @@ export const getCartController = async (req, res) => {
 
 export const addItemToCartController = async (req, res) => {
   try {
-    // const userId = req.user.id;
-    const userId = req.params.id;
+    const userId = req.user.id;
+    // const userId = req.params.id;
     const productId = req.params.itemId;
 
     const quantity = req.query.quantity;
@@ -39,7 +39,7 @@ export const addItemToCartController = async (req, res) => {
 
 export const updateCartItemQuantityController = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.user.id;
     const itemId = req.params.itemId;
     const { quantity } = req.parmas.id;
     // schema validation
@@ -64,7 +64,8 @@ export const updateCartItemQuantityController = async (req, res) => {
 
 export const removeCartItemController = async (req, res) => {
   try {
-    const cart = await cartService.getCart(req.user.id);
+    const userId = req.user.id;
+    const cart = await cartService.getCart(userId);
     // schema validation
     successResponse(res, cart, "Cart retrieved successfully", 200);
   } catch (error) {
