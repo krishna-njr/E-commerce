@@ -3,24 +3,21 @@ import * as productRepository from "../repositories/product.repository.js";
 
 export const getAllProductsService = async () => {
   try {
-    const products = await productRepository.getAllProduct();
+    const products = await productRepository.getAllProduct((limit = 10));
     if (!products || products.length === 0) {
       throw new AppError("No products found in the database", 404);
     }
     return products;
   } catch (err) {
     if (err instanceof AppError) throw err;
-    throw new AppError(
-      "Failed to fetch products due to a server error",
-      500,
-    );
+    throw new AppError("Failed to fetch products due to a server error", 500);
   }
 };
 
 export const filterProductsService = async (queryParams) => {
   try {
     if (queryParams.length() === 0) {
-      throw new AppError('Filter Condition are not passed', 400);
+      throw new AppError("Filter Condition are not passed", 400);
     }
     return await productRepository.filterProduct(queryParams);
   } catch (err) {
@@ -67,11 +64,7 @@ export const getSortedProductsService = async (
 
     // ["price", "createdAt", "id", "name"];
 
-    return await productRepository.getProductsSorted(
-      type,
-      sortBy,
-      order,
-    );
+    return await productRepository.getProductsSorted(type, sortBy, order);
   } catch (err) {
     if (err instanceof AppError) throw err;
     throw new AppError("Failed to retrieve sorted products", 500);
@@ -85,58 +78,52 @@ export const getProductWithIdService = async (productId) => {
     }
 
     return await productRepository.getProductById(productId);
-
   } catch (err) {
     if (err instanceof AppError) throw err;
     throw new AppError("Failed to retrieve product", 500);
   }
-}
-
+};
 
 export const addProductService = async (productDetails) => {
   try {
-    if (!productDetails.description || !productDetails.name && !productDetails.price) {
+    if (
+      !productDetails.description ||
+      (!productDetails.name && !productDetails.price)
+    ) {
       throw new AppError("Product details is required to add product", 400);
     }
 
     return await productRepository.addProduct(productDetails);
-
   } catch (err) {
     // console.log(err.message);
     if (err instanceof AppError) throw err;
     throw new AppError("Failed to add product", 500);
   }
-}
-
-
+};
 
 export const editProductService = async (details) => {
   try {
-
     const { id, ...productDetails } = details;
     if (!id) {
       throw new AppError("Product id is required to edit product", 400);
     }
 
     return await productRepository.editProductById(id, productDetails);
-
   } catch (err) {
     if (err instanceof AppError) throw err;
     throw new AppError("Failed to edit product", 500);
   }
-}
+};
 
 export const deleteProductService = async (productId) => {
   try {
-
     if (!productId) {
       throw new AppError("Product id is required to delete product", 400);
     }
 
     return await productRepository.deleteProductById(productId);
-
   } catch (err) {
     if (err instanceof AppError) throw err;
     throw new AppError("Failed to delete product", 500);
   }
-}
+};
