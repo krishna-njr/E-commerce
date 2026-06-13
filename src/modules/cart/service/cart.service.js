@@ -24,7 +24,7 @@ export const addItemToCartService = async (userId, productId, quantity) => {
         existingItem.quantity + quantity,
       );
     } else {
-      console.log("addItemToCartService", userId, productId, quantity);
+      // console.log("addItemToCartService", userId, productId, quantity);
       return await cartRepository.createCartItem({
         cartId: cart.id,
         productId,
@@ -44,6 +44,14 @@ export const updateCartItemQuantityService = async (
   try {
     const userCart = await cartRepository.findCartByUserId(userId);
     const existingItem = await cartRepository.findCartItemById(itemId);
+    console.log(
+      "updateCartItemQuantityService",
+      userId,
+      itemId,
+      quantity,
+      existingItem,
+      userCart,
+    );
     if (!existingItem || existingItem.cartId !== userCart.id) {
       throw new AppError("Cart item not found", 404);
     }

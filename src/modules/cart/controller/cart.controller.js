@@ -41,7 +41,10 @@ export const updateCartItemQuantityController = async (req, res) => {
   try {
     const userId = req.user.id;
     const itemId = req.params.itemId;
-    const { quantity } = req.parmas.id;
+    const { quantity } = req.query.quantity
+      ? { quantity: parseInt(req.query.quantity) }
+      : { quantity: 1 };
+
     // schema validation
     const updatedCart = await cartService.updateCartItemQuantityService(
       userId,

@@ -9,8 +9,8 @@ export const getAllProduct = async (limit) => {
     // console.log("Products retrieved from database:", products);
     return products;
   } catch (err) {
-    console.error("Database Error in getAllProduct:", err.message);
-    throw new AppError(`Database Error in getAllProduct : ${err.message}`);
+    console.error("Interval Server Error :", err.message);
+    throw new AppError(`Interval Server Error : ${err.message}`);
   }
 };
 
@@ -20,8 +20,8 @@ export const filterProduct = async (conditions) => {
       where: conditions,
     });
   } catch (err) {
-    console.error("Database Error in filterProduct:", err.message);
-    throw new AppError(`Database Error in filterProduct : ${err.message}`);
+    console.error("Internal Server Error : ", err.message);
+    throw new AppError(`Internal Server Error : ${err.message}`);
   }
 };
 
@@ -32,8 +32,8 @@ export const getPaginated = async (skip = 0, take = 10) => {
       take: take,
     });
   } catch (err) {
-    console.error("Database Error in getPaginated: ", err, message);
-    throw new AppError(`Database Error in getPaginated : ${err.message}`);
+    console.error("Internal Server Error : ", err.message);
+    throw new AppError(`Internal Server Error : ${err.message}`);
   }
 };
 
@@ -48,8 +48,8 @@ export const searchProduct = async (searchName) => {
       },
     });
   } catch (err) {
-    console.error("Database Error in searchProduct:", err.message);
-    throw new AppError(`Database Error in searchProduct : ${err.message}`);
+    console.error("Internal Server Error : ", err.message);
+    throw new AppError(`Internal Server Error : ${err.message}`);
   }
 };
 
@@ -66,16 +66,10 @@ export const getProductsSorted = async (
       },
     });
   } catch (err) {
-    console.error(`Database Error in getProductsSorted : `, err.message);
-    throw new AppError(`Database Error in getProductsSorted : ${err.message}`);
+    console.error(`Internal Server Error : `, err.message);
+    throw new AppError(`Internal Server Error : ${err.message}`);
   }
 };
-
-// POST    /products       # Add a product
-// GET     /products       # Get all products
-// GET     /products/:id   # Get products by ID
-// PATCH   /products/:id   # Editing a product
-// DELETE  /products/:id   # Deleting a product
 
 export const addProduct = async ({ name, description, price }) => {
   try {
@@ -84,23 +78,11 @@ export const addProduct = async ({ name, description, price }) => {
         name: name,
         description: description,
         price: price,
-
-        inventory: {
-          create: {},
-        },
-
-        // cartItems: {
-        //   create: [],
-        // },
-
-        // orderItems: {
-        //   create: [],
-        // },
       },
     });
   } catch (err) {
-    console.error(`Database Error in addProduct : `, err.message);
-    throw new AppError(`Database Error in addProduct : ${err.message}`);
+    console.error(`Internal Server Error : `, err.message);
+    throw new AppError(`Internal Server Error : ${err.message}`);
   }
 };
 
@@ -112,8 +94,8 @@ export const getProductById = async (productId) => {
       },
     });
   } catch (err) {
-    console.error("Database Error in getProductById:", err.message);
-    throw new AppError(`Database Error in getProductById : ${err.message}`);
+    console.error("Internal Server Error : ", err.message);
+    throw new AppError(`Internal Server Error : ${err.message}`);
   }
 };
 
@@ -125,8 +107,8 @@ export const deleteProductById = async (productId) => {
       },
     });
   } catch (err) {
-    console.error("Database Error in deleteProductById:", err.message);
-    throw new AppError(`Database Error in deleteProductById : ${err.message}`);
+    console.error("Internal Server Error : ", err.message);
+    throw new AppError(`Internal Server Error : ${err.message}`);
   }
 };
 
@@ -141,7 +123,7 @@ export const editProductById = async (productId, productDetails) => {
       },
     });
   } catch (err) {
-    console.error("Database Error in deleteProductById:", err.message);
-    throw new AppError(`Database Error in deleteProductById : ${err.message}`);
+    console.error("Internal Server Error : ", err.message);
+    throw new AppError(`Internal Server Error : ${err.message}`);
   }
 };

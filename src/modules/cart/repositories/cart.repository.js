@@ -54,9 +54,9 @@ export const findCartItemById = async (itemId) => {
     const cartItem = await prisma.cartItem.findUnique({
       where: { id: itemId },
     });
-    if (!cartItem) {
-      throw new AppError("Cart item not found", 404);
-    }
+    // if (!cartItem) {
+    //   throw new AppError("Cart item not found", 404);
+    // }
     return cartItem;
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -77,7 +77,7 @@ export const createCartItem = async (data) => {
     throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
-export const updateCartItem = async (itemId, quantity) => {
+export const updateCartItem = async (itemId, quantity = 1) => {
   try {
     const updateItem = await prisma.cartItem.update({
       where: { id: itemId },
