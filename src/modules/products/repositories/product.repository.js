@@ -73,12 +73,22 @@ export const getProductsSorted = async (
 
 export const addProduct = async ({ name, description, price }) => {
   try {
-    return await prisma.product.create({
-      data: {
-        name: name,
-        description: description,
-        price: price,
-      },
+    return await prisma.$transaction(async (tx) => {
+      const createdProduct = await tx.product.create({
+        data: {
+          name: name,
+          description: description,
+          price: price,
+        },
+      });
+      // we need to add the new Product in inventory also:
+      await tx.inventory.create({
+        data: {
+          productId: createdProduct.id,
+          quantity: 1,
+        },
+      });
+      return createdProduct;
     });
   } catch (err) {
     console.error(`Internal Server Error : `, err.message);

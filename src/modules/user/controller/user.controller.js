@@ -32,7 +32,8 @@ export const loginUserController = asyncWrapper(async (req, res) => {
 });
 
 export const getUserController = asyncWrapper(async (req, res) => {
-  const user = await getUserDetailService(req.body);
+  const userId = req.user.id;
+  const user = await getUserDetailService(userId);
 
   return res.status(200).json({
     status: true,

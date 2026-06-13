@@ -1,16 +1,24 @@
 import { Router } from "express";
 import * as addressController from "../controller/address.controller.js";
+import {
+  validateAuthentication,
+  authorize,
+} from "../middleware/address.middleware.js";
 
 const router = Router();
 
-router.post('/', addressController.createAddressController);
+router.use(validateAuthentication);
 
-router.get('/user/:id', addressController.getAddressesController);
+router.use(authorize(["CUSTOMER", "SELLER"]));
 
-router.get('/:id', addressController.getAddressByIdController);
+router.post("/", addressController.createAddressController);
 
-router.patch('/:id', addressController.updateAddressController);
+router.get("/user/:id", addressController.getAddressesController);
 
-router.delete('/:id', addressController.deleteAddressController);
+router.get("/:id", addressController.getAddressByIdController);
+
+router.patch("/:id", addressController.updateAddressController);
+
+router.delete("/:id", addressController.deleteAddressController);
 
 export { router };

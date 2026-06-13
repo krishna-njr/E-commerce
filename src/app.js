@@ -10,6 +10,8 @@ import globalErrorMiddleware from "./shared/globalError.middleware.js";
 import { router as addressRoutes } from "./modules/address/route/address.route.js";
 import { router as cartRoutes } from "./modules/cart/route/cart.route.js";
 
+import { router as inventoryRoutes } from "./modules/inventory/route/inventory.route.js";
+
 const app = express();
 
 app.use(express.json());
@@ -25,6 +27,8 @@ app.use("/api/v1/orders", orderRoutes);
 app.use("/api/v1/addresses", addressRoutes);
 
 app.use("/api/v1/cart", cartRoutes);
+
+app.use("/api/v1/inventory", inventoryRoutes);
 
 app.use(globalErrorMiddleware);
 

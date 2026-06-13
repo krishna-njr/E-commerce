@@ -4,7 +4,7 @@ import AppError from "../../../../utils/AppError.js";
 export const findUserById = async (userId) => {
   try {
     const user = prisma.user.findUnique({
-      where: { userId },
+      where: { id: userId },
       omit: {
         password: true,
       },
