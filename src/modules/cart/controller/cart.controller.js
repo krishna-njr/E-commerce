@@ -1,5 +1,5 @@
 import * as cartService from "../service/cart.service.js";
-import { AppError } from "../../../../utils/appError.js";
+import AppError from "../../../../utils/appError.js";
 import successResponse from "../../../../utils/responseHelper.js";
 
 export const getCartController = async (req, res) => {

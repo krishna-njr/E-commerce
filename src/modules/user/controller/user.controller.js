@@ -25,7 +25,7 @@ export const loginUserController = asyncWrapper(async (req, res) => {
       user: user, // sanitize user
       token: {
         accessToken,
-        refreshToken
+        refreshToken,
       },
     },
   });

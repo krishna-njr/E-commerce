@@ -1,5 +1,5 @@
 import * as cartRepository from "../repositories/cart.repository.js";
-import { AppError } from "../../../../utils/appError.js";
+import AppError from "../../../../utils/appError.js";
 
 export const getCartService = async (userId) => {
   try {

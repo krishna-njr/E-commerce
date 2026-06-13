@@ -1,94 +1,89 @@
 import { prisma } from "../../../../clients/pg-client.js";
 import AppError from "../../../../utils/AppError.js";
 
-export const findUserById = async (userId) =>{
-
-  try{
+export const findUserById = async (userId) => {
+  try {
     const user = prisma.user.findUnique({
-      where : {userId}, 
+      where: { userId },
       omit: {
-        password : true, 
-      }
-    }); 
+        password: true,
+      },
+    });
 
-    return user; 
-  }catch(err){
-    throw new Error('Database error in findUserById ', err.message); 
+    return user;
+  } catch (err) {
+    throw new Error("Database error in findUserById ", err.message);
   }
-}; 
+};
 
-
-export const findUserByEmail = async (email) =>{
-  try{
+export const findUserByEmail = async (email) => {
+  try {
     const user = prisma.user.findUnique({
-      where : {email}, 
+      where: { email },
       omit: {
-        password : true, 
-      }
-    }); 
+        password: true,
+      },
+    });
 
-    return user; 
-  }catch(err){
-    throw new Error('Database error in findUserByEmail ', err.message);
+    return user;
+  } catch (err) {
+    throw new Error("Database error in findUserByEmail ", err.message);
   }
-}; 
+};
 
-export const getUserWithEmailAndPassword = async (email) =>{
-  try{
+export const getUserWithEmailAndPassword = async (email) => {
+  try {
     const user = prisma.user.findUnique({
-      where : {email}, 
-    }); 
+      where: { email },
+    });
 
-    return user; 
-  }catch(err){
-    throw new Error('Database error in getUserWithEmailAndPassword ', err.message);
+    return user;
+  } catch (err) {
+    throw new Error(
+      "Database error in getUserWithEmailAndPassword ",
+      err.message,
+    );
   }
-}; 
+};
 
 export const createUser = async (userData) => {
-  try{
+  try {
     return await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
-          email: userData.email, 
-          fullName: userData.name, 
-          password: userData.password, // passing hash password from service. 
-          phoneNumber: userData.phoneNumber, 
-          role : userData.role, 
-          
+          ...userData,
           // status: 'ACTIVE', // for now setting it default to 'active'
-        }, 
+        },
         omit: {
-          password: true, 
-        }
-      }); 
+          password: true,
+        },
+      });
 
       await tx.cart.create({
         data: {
-          userId : user.id,
-        }
+          userId: user.id,
+        },
       });
-      
-      return user; 
-    }); 
-  }catch(err){
-    console.log(err.message)
-    throw new Error(`Database error in creating user : ${err.message}`); 
+
+      return user;
+    });
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(`Database error in creating user : ${err.message}`);
   }
-}; 
+};
 
-
-export const updateUserById = async ({userId, userDetails}) => {
-  try{
+export const updateUserById = async ({ userId, userDetails }) => {
+  try {
     const updatedUser = await prisma.user.update({
-      where: {id : userId}, 
+      where: { id: userId },
       data: {
-        ...userDetails
-      }
-    }); 
+        ...userDetails,
+      },
+    });
 
-    return updatedUser; 
-  }catch(err){
-    throw new AppError(`Database error in updating user ${err.message}`, 500)
+    return updatedUser;
+  } catch (err) {
+    throw new AppError(`Database error in updating user ${err.message}`, 500);
   }
-}
+};

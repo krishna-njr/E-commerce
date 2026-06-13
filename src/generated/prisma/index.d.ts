@@ -70,6 +70,7 @@ export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
 export namespace $Enums {
   export const UserRole: {
   CUSTOMER: 'CUSTOMER',
+  SELLER: 'SELLER',
   ADMIN: 'ADMIN'
 };
 
