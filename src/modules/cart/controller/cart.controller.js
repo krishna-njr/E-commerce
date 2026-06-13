@@ -4,9 +4,11 @@ import successResponse from "../../../../utils/responseHelper.js";
 
 export const getCartController = async (req, res) => {
   try {
-    const userId = req.user.id;
+    // const userId = req.user.id;
+    const userId = req.params.id;
     // schema validation
     const cart = await cartService.getCartService(userId);
+
     successResponse(res, cart, "Cart retrieved successfully", 200);
   } catch (error) {
     throw new AppError(`Failed to get cart: ${error.message}`, 500);
@@ -15,9 +17,20 @@ export const getCartController = async (req, res) => {
 
 export const addItemToCartController = async (req, res) => {
   try {
-    const userId = req.user.id;
+    // const userId = req.user.id;
+    const userId = req.params.id;
+    const productId = req.params.itemId;
+
+    const quantity = req.query.quantity;
+
+    // console.log("addItemToCartController", userId, productId, quantity);
+
     // schema validation
-    const addedCart = await cartService.addItemToCartService(userId);
+    const addedCart = await cartService.addItemToCartService(
+      userId,
+      productId,
+      quantity,
+    );
     successResponse(res, addedCart, "Item added to cart successfully", 201);
   } catch (error) {
     throw new AppError(`Failed to add item to cart: ${error.message}`, 500);

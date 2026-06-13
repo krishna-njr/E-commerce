@@ -1,33 +1,28 @@
-// validateAuthentication
-export const validateAuthentication = async (req, res, next) => {
-  const authHeader = req.header.authorization;
-  const token = authHeader.split(" ")[1];
+import jwt from "jsonwebtoken";
 
-  if (!authHeader || !token) {
+export const validateAuthentication = (req, res, next) => {
+  const authHeader = req.header("Authorization");
+
+  if (!authHeader?.startsWith("Bearer ")) {
     const error = new Error("Invalid credentials");
     error.statusCode = 401;
     return next(error);
-  } 
+  }
 
-  let decode;
   try {
-    decode = jwt.verify(token, process.env.ACCESS_SECRET);
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET);
+    req.user = decoded;
+
+    next();
   } catch (err) {
-    const error = new Error("Invalid token");
+    const error = new Error("Invalid or expired token");
     error.statusCode = 401;
     return next(error);
   }
-
-  if (!decode) {
-    const error = new Error("Unauthorized");
-    error.statusCode = 401;
-    return next(error);
-  }
-
-  req.user = decode; // mounting id and role into the req object
-  next();
 };
 
+// *************************
 export const authorize =
   (...roles) =>
   (req, res, next) => {

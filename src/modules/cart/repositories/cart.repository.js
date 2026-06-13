@@ -15,6 +15,7 @@ export const findCartByUserId = async (userId) => {
     return cart;
   } catch (error) {
     console.log(error.message);
+    if (error instanceof AppError) throw error;
     throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
@@ -29,6 +30,7 @@ export const createCart = async (userId) => {
     return newCart;
   } catch (error) {
     console.log(error.message);
+    if (error instanceof AppError) throw error;
     throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
@@ -38,12 +40,11 @@ export const findCartItem = async (cartId, productId) => {
     const cartItem = await prisma.cartItem.findFirst({
       where: { cartId, productId },
     });
-    if (!cartItem) {
-      throw new AppError("Cart item not found", 404);
-    }
+    return null;
     return cartItem;
   } catch (error) {
     console.log(error.message);
+    if (error instanceof AppError) throw error;
     throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
@@ -58,6 +59,7 @@ export const findCartItemById = async (itemId) => {
     }
     return cartItem;
   } catch (error) {
+    if (error instanceof AppError) throw error;
     console.log(error.message);
     throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
@@ -71,6 +73,7 @@ export const createCartItem = async (data) => {
     return cartItem;
   } catch (error) {
     console.log(error.message);
+    if (error instanceof AppError) throw error;
     throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
@@ -85,6 +88,7 @@ export const updateCartItem = async (itemId, quantity) => {
     }
     return updateItem;
   } catch (error) {
+    if (error instanceof AppError) throw error;
     console.log(error.message);
     throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
@@ -98,6 +102,7 @@ export const deleteCartItem = async (itemId) => {
     return deletedItem;
   } catch (error) {
     console.log(error.message);
+    if (error instanceof AppError) throw error;
     throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
@@ -111,6 +116,7 @@ export const clearCart = async (cartId) => {
     }
     return deletedItems;
   } catch (error) {
+    if (error instanceof AppError) throw error;
     console.log(error.message);
     throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }

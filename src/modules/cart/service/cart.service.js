@@ -24,6 +24,7 @@ export const addItemToCartService = async (userId, productId, quantity) => {
         existingItem.quantity + quantity,
       );
     } else {
+      console.log("addItemToCartService", userId, productId, quantity);
       return await cartRepository.createCartItem({
         cartId: cart.id,
         productId,

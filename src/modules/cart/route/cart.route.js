@@ -6,14 +6,17 @@ const router = Router();
 
 // router.use(authenticate);
 
-router.get("/", cartController.getCartController);
+router.get("/:id", cartController.getCartController);
 
-router.post("/items", cartController.addItemToCartController);
+router.post("/:id/items/:itemId", cartController.addItemToCartController);
 
-router.patch("/items/:itemId", cartController.updateCartItemQuantityController);
+router.patch(
+  "/:id/items/:itemId",
+  cartController.updateCartItemQuantityController,
+);
 
-router.delete("/items/:itemId", cartController.removeCartItemController);
+router.delete("/:id/items/:itemId", cartController.removeCartItemController);
 
-router.delete("/clear", cartController.clearCartController);
+router.delete("/:id/clear", cartController.clearCartController);
 
 export { router };
