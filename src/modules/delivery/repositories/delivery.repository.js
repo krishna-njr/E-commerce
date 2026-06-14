@@ -81,3 +81,22 @@ export const updateDeliveryStatus = async (deliveryId, status) => {
     throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
+
+// *****************
+
+export const createDeliveryWithTx = async (orderId, tx) => {
+  try {
+    const delivery = await tx.delivery.create({
+      data: {
+        orderId,
+      },
+    });
+    if (!delivery) {
+      throw new AppError("Failed to create delivery", 500);
+    }
+    return delivery;
+  } catch (error) {
+    console.log(error.message);
+    throw new AppError(`Internal Server Error : ${error.message}`, 500);
+  }
+};

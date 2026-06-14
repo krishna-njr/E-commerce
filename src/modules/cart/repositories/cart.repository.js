@@ -40,7 +40,7 @@ export const findCartItem = async (cartId, productId) => {
     const cartItem = await prisma.cartItem.findFirst({
       where: { cartId, productId },
     });
-    return null;
+    // if (!cartItem) return null;
     return cartItem;
   } catch (error) {
     console.log(error.message);
@@ -54,9 +54,9 @@ export const findCartItemById = async (itemId) => {
     const cartItem = await prisma.cartItem.findUnique({
       where: { id: itemId },
     });
-    // if (!cartItem) {
-    //   throw new AppError("Cart item not found", 404);
-    // }
+    if (!cartItem) {
+      throw new AppError("Cart item not found", 404);
+    }
     return cartItem;
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -106,9 +106,55 @@ export const deleteCartItem = async (itemId) => {
     throw new AppError(`Internal Server Error : ${error.message}`, 500);
   }
 };
+
 export const clearCart = async (cartId) => {
   try {
     const deletedItems = await prisma.cartItem.deleteMany({
+      where: { cartId },
+    });
+    if (!deletedItems) {
+      throw new AppError("Failed to clear cart", 500);
+    }
+    return deletedItems;
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    console.log(error.message);
+    throw new AppError(`Internal Server Error : ${error.message}`, 500);
+  }
+};
+
+// ****************
+export const getCartByIdWithTx = async (userId, tx) => {
+  try {
+    const userCart = await tx.cartItem.findUnique({
+      // tx : also prisma but it's a transaction
+      where: { userId },
+      include: {
+        items: {
+          include: {
+            product: {
+              include: {
+                inventory: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!userCart) {
+      throw new AppError("Failed to get user cart", 500);
+    }
+    return userCart;
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    console.log(error.message);
+    throw new AppError(`Internal Server Error : ${error.message}`, 500);
+  }
+};
+
+export const cleanCartWithTx = async (cartId, tx) => {
+  try {
+    const deletedItems = await tx.cartItem.deleteMany({
       where: { cartId },
     });
     if (!deletedItems) {

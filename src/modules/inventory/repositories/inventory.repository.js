@@ -119,3 +119,45 @@ export const increaseInventoryQuantity = async (productId, quantity) => {
     throw new AppError(`Internal Server Error : ${err.message}`);
   }
 };
+
+// ****************
+export const validateInventoryItemsWithTx = async (items, tx) => {
+  // items : cartItems
+  try {
+    for (const item of items) {
+      const stock = item.prodcut.inventory.quantity;
+      if (stock < item.quantity) {
+        throw new AppError(`${item.product.name} is out of stock`, 500);
+      }
+    }
+  } catch (error) {
+    if (error instanceof AppError) throw err;
+    throw new AppError(`Internal Server Error: ${err.message}`);
+  }
+};
+
+export const decreaseInventoryItemsQuantityWithTx = async (items, tx) => {
+  // items : cartItems
+  try {
+    for (const item of items) {
+      const inventoryItem = await tx.inventory.update({
+        where: {
+          productId: item.productId,
+        },
+        data: {
+          quantity: {
+            decrement: item.quantity,
+          },
+        },
+      });
+      if (!inventoryItem)
+        throw new AppError(
+          `Failed to decrease inventory for ${item.product.name}`,
+          500,
+        );
+    }
+  } catch (error) {
+    if (error instanceof AppError) throw err;
+    throw new AppError(`Internal Server Error: ${err.message}`);
+  }
+};
