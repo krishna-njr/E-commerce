@@ -17,45 +17,45 @@ export const createOrder = async ({ userId, addressId }) => {
       if (!cart || cart.items.length === 0) {
         throw new AppError("Cart is empty", 400);
       }
-      console.log("got user cart with items", cart);
+      // console.log("got user cart with items", cart);
 
       // 2. validating inventory
       ValidateInventoryItems(cart.items);
-      console.log("validated inventory items");
+      // console.log("validated inventory items");
 
       // 3. totalAmount
       const totalAmount = calculateTotalAmount(cart.items);
-      console.log("totalAmount", totalAmount);
+      // console.log("totalAmount", totalAmount);
 
       // 4. create order
       const order = await createOrderWithTx(userId, totalAmount, addressId, tx);
-      console.log("order", order);
+      // console.log("order", order);
 
       // 5. add in order items;
       const orderItems = await createOrderItemsWithTx(order.id, cart.items, tx);
-      console.log("orderItems", orderItems);
+      // console.log("orderItems", orderItems);
 
       // 6. inventory deduction:
       await decreaseInventoryItemsQuantityWithTx(cart.items, tx);
-      console.log("decreased inventory items");
+      // console.log("decreased inventory items");
 
       // 7. clear cart
       const deletedItems = await cleanCartWithTx(cart.id, tx); // clean cart items
-      console.log("deletedItems", deletedItems);
+      // console.log("deletedItems", deletedItems);
 
       // 8. create deilvery
       const delivery = await createDeliveryWithTx(order.id, tx);
-      console.log("delivery", delivery);
+      // console.log("delivery", delivery);
 
       // 9 notfication :
       const notfication = await createNotificationWithTx(userId, order.id, tx);
-      console.log("notfication", notfication);
+      // console.log("notfication", notfication);
 
       // 10 return order
       return order;
     });
   } catch (error) {
-    console.log(error.message);
+    // console.log(error.message);
     throw new AppError(`Internal Server Error : ${error.message}`);
   }
 };
@@ -68,7 +68,7 @@ export const getOrders = async () => {
       },
     });
   } catch (error) {
-    console.log(error.message);
+    // console.log(error.message);
 
     throw new AppError(`Internal Server Error : ${error.message}`);
   }
