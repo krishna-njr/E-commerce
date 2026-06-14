@@ -1,10 +1,10 @@
 import { Router } from "express";
 import * as deliveryController from "../controller/delivery.controller.js";
 import {
-  validateRequest,
   validateAuthentication,
   authorize,
 } from "../middleware/delivery.middleware.js";
+import { validateRequest } from "../../../shared/globalError.middleware.js";
 import {
   createDeliverySchema,
   getDeliveryByIdSchema,
