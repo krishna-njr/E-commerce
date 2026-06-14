@@ -30,13 +30,15 @@ export const getOrdersService = async () => {
   }
 };
 
-export const getOrderByIdService = async (userId) => {
+export const getOrderByIdService = async (orderId) => {
   try {
-    if (!userId) {
+    if (!orderId) {
       throw new AppError("Missing Id", 400);
     }
-    const order = await getOrderById(userId);
-
+    const order = await getOrderById(orderId);
+    if (!order) {
+      throw new AppError("Order Not Found", 404);
+    }
     return order;
   } catch (error) {
     if (error instanceof AppError) throw error;

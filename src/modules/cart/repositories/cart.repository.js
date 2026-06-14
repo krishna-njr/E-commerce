@@ -6,7 +6,11 @@ export const findCartByUserId = async (userId) => {
     const cart = await prisma.cart.findUnique({
       where: { userId },
       include: {
-        items: { include: { product: true } },
+        items: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
     if (!cart) {
@@ -25,7 +29,7 @@ export const createCart = async (userId) => {
       data: { userId },
     });
     if (!newCart) {
-      throw new AppError("Failed to create cart", 500);
+      throw new AppError("Failed to create cart", 400);
     }
     return newCart;
   } catch (error) {
@@ -68,7 +72,7 @@ export const createCartItem = async (data) => {
   try {
     const cartItem = await prisma.cartItem.create({ data });
     if (!cartItem) {
-      throw new AppError("Failed to create cart item", 500);
+      throw new AppError("Failed to create cart item", 400);
     }
     return cartItem;
   } catch (error) {
@@ -84,7 +88,7 @@ export const updateCartItem = async (itemId, quantity = 1) => {
       data: { quantity },
     });
     if (!updateItem) {
-      throw new AppError("Failed to update cart item", 500);
+      throw new AppError("Failed to update cart item", 400);
     }
     return updateItem;
   } catch (error) {
@@ -97,7 +101,7 @@ export const deleteCartItem = async (itemId) => {
   try {
     const deletedItem = await prisma.cartItem.delete({ where: { id: itemId } });
     if (!deletedItem) {
-      throw new AppError("Failed to delete cart item", 500);
+      throw new AppError("Failed to delete cart item", 400);
     }
     return deletedItem;
   } catch (error) {
@@ -113,7 +117,7 @@ export const clearCart = async (cartId) => {
       where: { cartId },
     });
     if (!deletedItems) {
-      throw new AppError("Failed to clear cart", 500);
+      throw new AppError("Failed to clear cart", 400);
     }
     return deletedItems;
   } catch (error) {
@@ -126,7 +130,7 @@ export const clearCart = async (cartId) => {
 // ****************
 export const getCartByIdWithTx = async (userId, tx) => {
   try {
-    const userCart = await tx.cartItem.findUnique({
+    const userCart = await tx.cart.findUnique({
       // tx : also prisma but it's a transaction
       where: { userId },
       include: {
@@ -142,7 +146,7 @@ export const getCartByIdWithTx = async (userId, tx) => {
       },
     });
     if (!userCart) {
-      throw new AppError("Failed to get user cart", 500);
+      throw new AppError("Failed to get user cart", 400);
     }
     return userCart;
   } catch (error) {
@@ -158,7 +162,7 @@ export const cleanCartWithTx = async (cartId, tx) => {
       where: { cartId },
     });
     if (!deletedItems) {
-      throw new AppError("Failed to clear cart", 500);
+      throw new AppError("Failed to clear cart", 400);
     }
     return deletedItems;
   } catch (error) {

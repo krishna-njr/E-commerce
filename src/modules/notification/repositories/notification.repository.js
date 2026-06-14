@@ -24,11 +24,13 @@ export const deleteNotification = async () => {};
 
 // ***********************
 
-export const createNotificationWithTx = async (userId, tx) => {
+export const createNotificationWithTx = async (userId, orderId, tx) => {
   try {
     const notification = await tx.notification.create({
       data: {
         userId,
+        title: "Order Created",
+        message: `Order #${orderId} has been placed successfully`,
       },
     });
     if (!notification) {
@@ -37,6 +39,6 @@ export const createNotificationWithTx = async (userId, tx) => {
     return notification;
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new AppError("Error creating notification", 500);
+    throw new AppError(`Interval Server Error : ${error.message}`, 500);
   }
 };

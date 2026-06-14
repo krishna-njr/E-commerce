@@ -1,88 +1,69 @@
 import { asyncWrapper } from "../../../../utils/asyncWrapper.js";
+import successResponse from "../../../../utils/responseHelper.js";
 import * as orderServices from "../service/order.service.js";
 
 export const createOrderController = asyncWrapper(async (req, res) => {
   const userId = req.user.id;
-  const items = req.body.items;
-  const totalAmount = req.body.totalAmount;
+  // const items = req.body.items;
+  // const totalAmount = req.body.totalAmount;
   const addressId = req.body.addressId;
 
   const createdOrder = await orderServices.createOrderService({
     userId,
-    items,
-    totalAmount,
+    // items,
+    // totalAmount,
     addressId,
   });
 
-  res.status(201).json({
-    status: true,
-    message: "Order Created",
-    date: createdOrder,
-  });
+  successResponse(res, createdOrder, "Order Created", 201);
 });
 
 export const getOrdersController = asyncWrapper(async (req, res) => {
   const order = await orderServices.getOrdersService();
 
-  res.status(200).json({
-    status: true,
-    message: "Successfully Retrieved",
-    date: order,
-  });
+  successResponse(res, order, "Orders Retrieved", 200);
 });
 
 export const getOrderByIdController = asyncWrapper(async (req, res) => {
-  const productId = req.params.id;
+  const orderId = req.params.id;
 
-  const order = await orderServices.getOrderByIdService(productId);
+  const order = await orderServices.getOrderByIdService(orderId);
 
-  res.status(200).json({
-    status: true,
-    message: "Successfully Retrieved",
-    date: order,
-  });
+  successResponse(res, order, "Order Retrieved", 200);
 });
 
 export const updateOrderStatusController = asyncWrapper(async (req, res) => {
-  const productId = req.params.id;
+  const orderId = req.params.id;
   const status = req.query.status;
 
+  //  ! here we have to check what status is allowed to update or not.
+
   const updatedOrder = await orderServices.updateOrderStatusService(
-    productId,
+    orderId,
     status,
   );
 
-  res.status(201).json({
-    status: true,
-    message: "Order Updated",
-    date: updatedOrder,
-  });
+  successResponse(res, updatedOrder, "Order Updated", 201);
 });
 
 export const updatePaymentStatusController = asyncWrapper(async (req, res) => {
-  const productId = req.params.id;
+  const orderId = req.params.id;
   const paymentStatus = req.query.paymentStatus;
 
+  //  ! here we have to check what status is allowed to update or not.
+
   const updatedOrder = await orderServices.updatePaymentStatusService(
-    productId,
+    orderId,
     paymentStatus,
   );
 
-  res.status(201).json({
-    status: true,
-    message: "Status Updated",
-    date: updatedOrder,
-  });
+  successResponse(res, updatedOrder, "Payment Status Updated", 201);
 });
 
 export const cancelOrderController = asyncWrapper(async (req, res) => {
-  const productId = req.query.id;
+  const orderId = req.query.id;
 
-  const deletedOrder = await orderServices.cancelOrderService(productId);
+  const canceledOrder = await orderServices.cancelOrderService(orderId);
 
-  res.status(201).json({
-    status: true,
-    message: "Order Deleted",
-    date: deletedOrder,
-  });
+  successResponse(res, canceledOrder, "Order Cancelled", 201);
 });
