@@ -1,15 +1,30 @@
-import { parseAsync } from "zod";
+import { parseAsync, ZodError } from "zod";
+import AppError from "../../utils/AppError.js";
 
 const validateRequest = (schema) => async (req, res, next) => {
   try {
-    await schema.parseAsync({
+    const parsedData = await schema.parseAsync({
       body: req.body,
       query: req.query,
       params: req.params,
     });
+    if (parsedData.body) req.body = parsedData.body;
+    // if (parsedData.query) req.query = parsedData.query;
+    // if (parsedData.params) req.params = parsedData.params;
+
+    console.log("Validation successful", parsedData);
     next();
   } catch (error) {
-    next(new AppError(`Validation Error: ${error.message}`, 400));
+    if (error instanceof ZodError) {
+      return next(
+        new AppError(
+          error.issues.map((issue) => issue.message).join(", "),
+          400,
+        ),
+      );
+    }
+
+    next(error);
   }
 };
 

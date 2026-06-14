@@ -49,7 +49,8 @@ export const updateDeliveryController = async (req, res) => {
 export const updateDeliveryStatusController = async (req, res) => {
   try {
     const deliveryId = req.params.id;
-    const deliveryStatus = req.body.status;
+    const deliveryStatus = req.query.status;
+    console.log("Updating delivery status to:", deliveryStatus);
     const delivery = await deliveryService.updateDeliveryStatusService(
       deliveryId,
       deliveryStatus,

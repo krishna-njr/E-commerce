@@ -3,6 +3,8 @@ import AppError from "../../../../utils/appError.js";
 
 export const createDelivery = async (data) => {
   try {
+    // * data: { orderId, addressId, deliveryDate }
+    // ! delivery creation should be part of order creation.
     const delivery = await prisma.delivery.create({ data });
     if (!delivery) {
       throw new AppError("Failed to create delivery", 500);
@@ -70,7 +72,7 @@ export const updateDeliveryStatus = async (deliveryId, status) => {
   try {
     const delivery = await prisma.delivery.update({
       where: { id: deliveryId },
-      data: { status },
+      data: { deliveryStatus: status },
     });
     if (!delivery) {
       throw new AppError("Failed to update delivery status", 500);

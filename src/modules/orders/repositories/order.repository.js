@@ -99,7 +99,7 @@ export const updateOrderStatus = async (id, status) => {
         id: id,
       },
       data: {
-        status: status,
+        orderStatus: status,
       },
     });
   } catch (error) {

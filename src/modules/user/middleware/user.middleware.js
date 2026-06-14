@@ -1,4 +1,7 @@
 import jwt from "jsonwebtoken";
+import validateRequest from "../../../shared/validateRequest.middleware.js";
+
+export { validateRequest };
 
 export const validateAuthentication = (req, res, next) => {
   const authHeader = req.header("Authorization");

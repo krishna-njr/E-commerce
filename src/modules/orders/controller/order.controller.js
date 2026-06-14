@@ -35,6 +35,7 @@ export const getOrderByIdController = asyncWrapper(async (req, res) => {
 export const updateOrderStatusController = asyncWrapper(async (req, res) => {
   const orderId = req.params.id;
   const status = req.query.status;
+  // console.log("updateOrderStatusController", orderId, status);
 
   //  ! here we have to check what status is allowed to update or not.
 
@@ -48,7 +49,7 @@ export const updateOrderStatusController = asyncWrapper(async (req, res) => {
 
 export const updatePaymentStatusController = asyncWrapper(async (req, res) => {
   const orderId = req.params.id;
-  const paymentStatus = req.query.paymentStatus;
+  const paymentStatus = req.query.status;
 
   //  ! here we have to check what status is allowed to update or not.
 
@@ -61,7 +62,7 @@ export const updatePaymentStatusController = asyncWrapper(async (req, res) => {
 });
 
 export const cancelOrderController = asyncWrapper(async (req, res) => {
-  const orderId = req.query.id;
+  const orderId = req.params.id;
 
   const canceledOrder = await orderServices.cancelOrderService(orderId);
 

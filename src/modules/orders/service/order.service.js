@@ -80,7 +80,9 @@ export const cancelOrderService = async (orderId) => {
       throw new AppError("Missing Id", 400);
     }
     const cancelledOrder = await cancelOrder(orderId);
-
+    if (!cancelledOrder) {
+      throw new AppError("Order Not Found", 404);
+    }
     return cancelledOrder;
   } catch (error) {
     if (error instanceof AppError) throw error;
