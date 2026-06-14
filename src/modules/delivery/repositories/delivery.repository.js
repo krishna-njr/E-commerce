@@ -1,4 +1,4 @@
-import prisma from "../../../../clients/pg-client.js";
+import { prisma } from "../../../../clients/pg-client.js";
 import AppError from "../../../../utils/appError.js";
 
 export const createDelivery = async (data) => {

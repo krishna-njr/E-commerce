@@ -1,5 +1,5 @@
 import * as deliveryService from "../service/delivery.service.js";
-import { AppError } from "../../../../utils/appError.js";
+import AppError from "../../../../utils/appError.js";
 import successResponse from "../../../../utils/responseHelper.js";
 
 export const createDeliveryController = async (req, res) => {

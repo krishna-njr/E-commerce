@@ -4,7 +4,7 @@ import {
   validateAuthentication,
   authorize,
 } from "../middleware/delivery.middleware.js";
-import { validateRequest } from "../../../shared/globalError.middleware.js";
+import { validateRequest } from "../middleware/delivery.middleware.js";
 import {
   createDeliverySchema,
   getDeliveryByIdSchema,
