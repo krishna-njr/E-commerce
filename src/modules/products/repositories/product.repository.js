@@ -1,5 +1,6 @@
 import { prisma } from "../../../../clients/pg-client.js";
 import AppError from "../../../../utils/AppError.js";
+import { createProductInInventoryWithTx } from "../../inventory/repositories/inventory.repository.js";
 
 export const getAllProduct = async (limit) => {
   try {
@@ -81,13 +82,9 @@ export const addProduct = async ({ name, description, price }) => {
           price: price,
         },
       });
-      // we need to add the new Product in inventory also:
-      await tx.inventory.create({
-        data: {
-          productId: createdProduct.id,
-          quantity: 1,
-        },
-      });
+      // add product in inventory.
+      await createProductInInventoryWithTx(createdProduct.id, tx);
+
       return createdProduct;
     });
   } catch (err) {

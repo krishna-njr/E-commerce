@@ -41,9 +41,7 @@ export const updateCartItemQuantityController = async (req, res) => {
   try {
     const userId = req.user.id;
     const itemId = req.params.itemId;
-    const { quantity } = req.query.quantity
-      ? { quantity: parseInt(req.query.quantity) }
-      : { quantity: 1 };
+    const quantity = req.query.quantity;
 
     // schema validation
     const updatedCart = await cartService.updateCartItemQuantityService(
@@ -68,20 +66,21 @@ export const updateCartItemQuantityController = async (req, res) => {
 export const removeCartItemController = async (req, res) => {
   try {
     const userId = req.user.id;
-    const cart = await cartService.getCart(userId);
+    const itemId = req.params.itemId;
+    const cart = await cartService.removeCartItemService(userId, itemId);
     // schema validation
-    successResponse(res, cart, "Cart retrieved successfully", 200);
+    successResponse(res, cart, "Cart item removed successfully", 200);
   } catch (error) {
-    throw new AppError(`Failed to get cart: ${error.message}`, 500);
+    throw new AppError(`Failed to remove cart item: ${error.message}`, 500);
   }
 };
 
 export const clearCartController = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.user.id;
     // schema validation
-    const cart = await cartService.getCart(userId);
-    successResponse(res, cart, "Cart retrieved successfully", 200);
+    const cart = await cartService.clearCartService(userId);
+    successResponse(res, cart, "Cart cleared successfully", 200);
   } catch (error) {
     throw new AppError(`Failed to clear cart: ${error.message}`, 500);
   }

@@ -32,7 +32,7 @@ export const getAddressesController = async (req, res) => {
 };
 export const getAddressByIdController = async (req, res) => {
   try {
-    const addressId = req.params.addressId;
+    const addressId = req.params.id;
     // console.log(userId);
     // schema validation :
     const address = await getAddressByIdService(addressId);
@@ -44,7 +44,7 @@ export const getAddressByIdController = async (req, res) => {
 };
 export const updateAddressController = async (req, res) => {
   try {
-    const addressId = req.params.addressId;
+    const addressId = req.params.id;
     const addressDetails = req.body;
     // schema validation :
     const updatedAddress = await updateAddressService(
@@ -59,7 +59,7 @@ export const updateAddressController = async (req, res) => {
 };
 export const deleteAddressController = async (req, res) => {
   try {
-    const addressId = req.params.addressId;
+    const addressId = req.params.id;
     // schema validation :
     const deletedAddress = await deleteAddressService(addressId);
 
