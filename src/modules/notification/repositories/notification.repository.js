@@ -51,7 +51,7 @@ export const markAsRead = async (id) => {
   try {
     const notification = await prisma.notification.update({
       where: { id },
-      data: { isRead: true, readAt: new Date() },
+      data: { isRead: true },
     });
     if (!notification) {
       throw new AppError("Notification not found", 404);
