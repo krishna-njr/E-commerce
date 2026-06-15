@@ -7,18 +7,34 @@ import {
 import {
   authorize,
   validateAuthentication,
+  validateRequest,
 } from "../middleware/user.middleware.js";
+import {
+  getUserSchema,
+  loginUserSchema,
+  registerUserSchema,
+} from "../validations/user.validation.js";
 
 const router = Router();
 
-router.post("/register", registerUserController);
+router.post(
+  "/register",
+  validateRequest(registerUserSchema),
+  registerUserController,
+);
 
-router.post("/login", loginUserController);
+router.post("/login", validateRequest(loginUserSchema), loginUserController);
 
-router.get("/profile", validateAuthentication, getUserController);
+router.get(
+  "/profile",
+  validateRequest(getUserSchema),
+  validateAuthentication,
+  getUserController,
+);
 
 router.get(
   "/admin/profile",
+  validateRequest(getUserSchema),
   validateAuthentication,
   authorize("ADMIN"),
   (req, res) => {

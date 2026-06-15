@@ -1,4 +1,5 @@
 import { asyncWrapper } from "../../../../utils/asyncWrapper.js";
+import successResponse from "../../../../utils/responseHelper.js";
 import {
   getUserDetailService,
   loginUserService,
@@ -6,40 +7,34 @@ import {
 } from "../services/user.service.js";
 
 export const registerUserController = asyncWrapper(async (req, res) => {
-  const user = await registerUserService(req.body);
+  const userDetails = req.body;
+  // in body :
+  //  email,
+  // password,
+  // fullName,
+  // phoneNumber,
+  // role,
+  const user = await registerUserService(userDetails);
 
-  return res.status(201).json({
-    status: true,
-    message: "User is created",
-    user: user, // sanitize user
-  });
+  successResponse(res, user, "User created successfully", 201);
 });
 
 export const loginUserController = asyncWrapper(async (req, res) => {
   const { user, accessToken, refreshToken } = await loginUserService(req.body);
 
-  return res.status(200).json({
-    status: true,
-    message: "Sucessfully login",
-    data: {
-      user: user, // sanitize user
-      token: {
-        accessToken,
-        refreshToken,
-      },
-    },
-  });
+  successResponse(
+    res,
+    { user, accessToken, refreshToken },
+    "Successfully login",
+    200,
+  );
 });
 
 export const getUserController = asyncWrapper(async (req, res) => {
   const userId = req.user.id;
   const user = await getUserDetailService(userId);
 
-  return res.status(200).json({
-    status: true,
-    message: "Successfully fetched user",
-    user: user, // sanitize user
-  });
+  successResponse(res, user, "User details retrieved successfully", 200);
 });
 
 // getUsers();
