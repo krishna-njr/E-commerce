@@ -1,7 +1,13 @@
 import jwt from "jsonwebtoken";
 import validateRequest from "../../../shared/validateRequest.middleware.js";
+import z from "zod";
 
 export { validateRequest };
+
+const decodedSchema = z.object({
+  id: z.string().uuid("Invalid user ID format"),
+  role: z.enum(["ADMIN", "SELLER", "CUSTOMER"]),
+});
 
 export const validateAuthentication = (req, res, next) => {
   const authHeader = req.header("Authorization");
@@ -15,7 +21,14 @@ export const validateAuthentication = (req, res, next) => {
   try {
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET);
-    req.user = decoded;
+
+    const validatedDecoded = decodedSchema.safeParse(decoded);
+    if (!validatedDecoded.success) {
+      const error = new Error("Invalid token payload");
+      error.statusCode = 401;
+      return next(error);
+    }
+    req.user = validatedDecoded.data;
 
     next();
   } catch (err) {
