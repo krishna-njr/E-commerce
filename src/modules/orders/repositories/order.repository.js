@@ -92,6 +92,23 @@ export const getOrderById = async (id) => {
   }
 };
 
+export const getOrderStatus = async (id) => {
+  try{
+    const status = await prisma.order.findUnique({
+      where: {id}, 
+      // select: {
+      //   orderStatus: true, 
+      //   paymentStatus: true, 
+      // }  
+    });
+    // console.log(`inside getOrderStatus repo : ${status}`); 
+    // console.log(JSON.stringify(status)); 
+    return status; 
+  }catch(error){
+    throw new AppError(`Internal Server Error : ${error.message}`); 
+  }
+}
+
 export const updateOrderStatus = async (id, status) => {
   try {
     return await prisma.order.update({
