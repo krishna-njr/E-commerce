@@ -1,9 +1,9 @@
 import AppError from "../../../../utils/AppError.js";
 import * as productRepository from "../repositories/product.repository.js";
 
-export const getAllProductsService = async (limit) => {
+export const getAllProductsService = async (sellerId, limit) => {
   try {
-    const products = await productRepository.getAllProduct(limit);
+    const products = await productRepository.getAllProduct(sellerId, limit);
     if (!products || products.length === 0) {
       throw new AppError("No products found in the database", 404);
     }
@@ -15,41 +15,21 @@ export const getAllProductsService = async (limit) => {
   }
 };
 
-export const filterProductsService = async (queryParams) => {
+export const getProductsFilterService = async (filters) => {
   try {
-    if (queryParams.length() === 0) {
-      throw new AppError("Filter Condition are not passed", 400);
+    // const { page = 1, limit = 10, sortBy, order = "asc", ...filters } = query;
+    const products = await productRepository.getProductsByFilter(filters);
+    if (!products || products.length === 0) {
+      throw new AppError(
+        "No products found matching the provided filters",
+        404,
+      );
     }
-    return await productRepository.filterProduct(queryParams);
+    return products;
   } catch (err) {
     if (err instanceof AppError) throw err;
-    throw new AppError(
-      "Filtering failed. Please check your query parameters.",
-      400,
-    );
-  }
-};
-
-export const getPaginatedProductsService = async (page = 1, limit = 10) => {
-  try {
-    const skip = (page - 1) * limit;
-
-    return await productRepository.getPaginated(skip, limit);
-  } catch (err) {
-    throw new AppError("Failed to load paginated products", 500);
-  }
-};
-
-export const searchProductService = async (productName) => {
-  try {
-    if (!productName) {
-      throw new AppError("Search query cannot be empty", 400);
-    }
-
-    return await productRepository.searchProduct(productName);
-  } catch (err) {
-    if (err instanceof AppError) throw err;
-    throw new AppError("An error occurred during search", 500);
+    console.error("Error in getProductsFilterService:", err.message); // *******************
+    throw new AppError("Failed to fetch products due to a server error", 500);
   }
 };
 

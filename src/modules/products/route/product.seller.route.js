@@ -7,20 +7,48 @@ const router = Router();
 import {
   validateAuthentication,
   authorize,
+  validateRequest,
 } from "../middleware/product.middleware.js";
+import {
+  addProductSchema,
+  deleteProductSchema,
+  editProductSchema,
+  getProductSchema,
+  getSellerProductsSchema,
+} from "../validations/products.validation.js";
 
-// Protect all seller routes with authentication and role authorization middlewares
 router.use(validateAuthentication);
+
 router.use(authorize("SELLER"));
 
-router.get("/seller", sellerController.getSellerProductsController);
+router.get(
+  "/seller",
+  validateRequest(getSellerProductsSchema),
+  sellerController.getSellerProductsController,
+);
 
-router.post("/seller", sellerController.addProductController);
+router.post(
+  "/seller",
+  validateRequest(addProductSchema),
+  sellerController.addProductController,
+);
 
-router.get("/seller/:id", sellerController.getProductController);
+router.get(
+  "/seller/:id",
+  validateRequest(getProductSchema),
+  sellerController.getProductByIdController,
+);
 
-router.delete("/seller/:id", sellerController.deleteProductController);
+router.delete(
+  "/seller/:id",
+  validateRequest(deleteProductSchema),
+  sellerController.deleteProductController,
+);
 
-router.patch("/seller/:id", sellerController.editProductController);
+router.patch(
+  "/seller/:id",
+  validateRequest(editProductSchema),
+  sellerController.editProductController,
+);
 
 export { router };

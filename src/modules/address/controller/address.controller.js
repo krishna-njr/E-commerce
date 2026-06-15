@@ -10,8 +10,8 @@ import {
 
 export const createAddressController = async (req, res) => {
   try {
-    const addressDetails = req.body;
     // schema validation :
+    const addressDetails = { ...req.body, userId: req.user.id }; // fullName, street, city, state, postalCode, country, userId, phoneNumber
     const address = await createAddressService(addressDetails);
 
     successResponse(res, address, "Successfully created address");
@@ -21,7 +21,7 @@ export const createAddressController = async (req, res) => {
 };
 export const getAddressesController = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.user.id;
     // schema validation :
     const addresses = await getAddressesService(userId);
 
@@ -32,10 +32,10 @@ export const getAddressesController = async (req, res) => {
 };
 export const getAddressByIdController = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const addressId = req.params.id;
     // console.log(userId);
     // schema validation :
-    const address = await getAddressByIdService(userId);
+    const address = await getAddressByIdService(addressId);
 
     successResponse(res, address, "Successfully get address");
   } catch (error) {
@@ -44,10 +44,13 @@ export const getAddressByIdController = async (req, res) => {
 };
 export const updateAddressController = async (req, res) => {
   try {
-    const id = req.params.id;
+    const addressId = req.params.id;
     const addressDetails = req.body;
     // schema validation :
-    const updatedAddress = await updateAddressService(id, addressDetails);
+    const updatedAddress = await updateAddressService(
+      addressId,
+      addressDetails,
+    );
 
     successResponse(res, updatedAddress, "Successfully updated address");
   } catch (error) {

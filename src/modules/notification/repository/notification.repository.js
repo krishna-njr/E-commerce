@@ -1,5 +1,5 @@
 import { prisma } from "../../../../clients/pg-client.js";
-import AppError from "../../../../utils/appError.js";
+import AppError from "../../../../utils/AppError.js";
 
 export const createNotification = async (notificationData) => {
   try {
@@ -51,7 +51,7 @@ export const markAsRead = async (id) => {
   try {
     const notification = await prisma.notification.update({
       where: { id },
-      data: { isRead: true },
+      data: { isRead: true, readAt: new Date() },
     });
     if (!notification) {
       throw new AppError("Notification not found", 404);

@@ -1,18 +1,54 @@
 import { Router } from "express";
 import * as orderController from "../controller/order.controller.js";
+import {
+  authorize,
+  validateAuthentication,
+  validateRequest,
+} from "../middleware/order.middleware.js";
+import {
+  cancelOrderSchema,
+  createOrderSchema,
+  getOrderByIdSchema,
+  updateOrderStatusSchema,
+  updatePaymentStatusSchema,
+} from "../validations/orders.validation.js";
 
 const router = Router();
 
-router.post('/', orderController.createOrderController);
+router.use(validateAuthentication);
 
-router.get('/', orderController.getOrdersController);
+router.use(authorize("CUSTOMER"));
 
-router.get('/:id', orderController.getOrderByIdController);
+router.post(
+  "/:id",
+  validateRequest(createOrderSchema),
+  orderController.createOrderController,
+);
 
-router.patch('/:id/status', orderController.updateOrderStatusController);
+router.get("/", orderController.getOrdersController);
 
-router.patch('/:id/payment-status', orderController.updatePaymentStatusController);
+router.get(
+  "/:id",
+  validateRequest(getOrderByIdSchema),
+  orderController.getOrderByIdController,
+);
 
-router.delete('/:id', orderController.cancelOrderController);
+router.patch(
+  "/status/:id",
+  validateRequest(updateOrderStatusSchema),
+  orderController.updateOrderStatusController,
+);
+
+router.patch(
+  "/payment-status/:id",
+  validateRequest(updatePaymentStatusSchema),
+  orderController.updatePaymentStatusController,
+);
+
+router.delete(
+  "/:id",
+  validateRequest(cancelOrderSchema),
+  orderController.cancelOrderController,
+);
 
 export { router };

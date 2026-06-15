@@ -4,9 +4,9 @@ import successResponse from "../../../../utils/responseHelper.js";
 import AppError from "../../../../utils/appError.js";
 
 export const getSellerProductsController = asyncWrapper(async (req, res) => {
-  // const sellerId = req.user.id;
+  const sellerId = req.user.id;
   let limit = req.query.limit || 10; // Default limit to 10 if not provided
-  const products = await productService.getAllProductsService(limit); // limit to 100 :  at services level
+  const products = await productService.getAllProductsService(sellerId, limit); // limit to 100 :  at services level
   successResponse(res, products, "Seller Products", 200);
 });
 
@@ -17,7 +17,7 @@ export const getSellerProductsFilteredController = asyncWrapper(
       sellerId: req.user.id,
     };
 
-    const products = await productService.filterProductsService(filters);
+    const products = await productService.getProductsFilterService(filters);
     successResponse(res, products, "Filtered Products", 200);
   },
 );
@@ -34,7 +34,7 @@ export const addProductController = asyncWrapper(async (req, res) => {
   successResponse(res, newProduct, "New Product Created", 201);
 });
 
-export const getProductController = asyncWrapper(async (req, res) => {
+export const getProductByIdController = asyncWrapper(async (req, res) => {
   const productId = req.params.id; // name, price, description?
   const product = await productService.getProductWithIdService(productId);
   successResponse(res, product, "Product Retrieved", 200);

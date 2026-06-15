@@ -1,9 +1,18 @@
 import { prisma } from "../../../../clients/pg-client.js";
 import AppError from "../../../../utils/appError.js";
 
-export const createInventory = async (data) => {
+export const createInventory = async (productId, quantity) => {
   try {
-    const inventory = await prisma.inventory.create({ data });
+    // first check the existence of product
+    const product = await prisma.inventory.findUnique({
+      where: {
+        productId: productId,
+      },
+    });
+    if (!product) {
+      throw new AppError("Product not found", 404);
+    }
+    const inventory = await updateInventory(productId, quantity);
     if (!inventory) {
       throw new AppError("Failed to create inventory", 500);
     }
@@ -55,13 +64,13 @@ export const getInventoryByProductId = async (productId) => {
   }
 };
 
-export const updateInventory = async (productId, data) => {
+export const updateInventory = async (productId, quantity) => {
   try {
     const inventory = await prisma.inventory.update({
       where: {
         productId: productId,
       },
-      data: data, // increase or decrease.
+      data: { quantity }, // increase or decrease.
     });
     if (!inventory) {
       throw new AppError("Failed to update inventory", 500);
@@ -117,5 +126,62 @@ export const increaseInventoryQuantity = async (productId, quantity) => {
     console.error("Internal Server Error : ", err.message);
     if (err instanceof AppError) throw err;
     throw new AppError(`Internal Server Error : ${err.message}`);
+  }
+};
+
+// ****************
+export const validateInventoryItemsWithTx = async (items, tx) => {
+  // items : cartItems
+  try {
+    for (const item of items) {
+      const stock = item.prodcut.inventory.quantity;
+      if (stock < item.quantity) {
+        throw new AppError(`${item.product.name} is out of stock`, 500);
+      }
+    }
+  } catch (error) {
+    if (error instanceof AppError) throw err;
+    throw new AppError(`Internal Server Error: ${err.message}`);
+  }
+};
+
+export const decreaseInventoryItemsQuantityWithTx = async (items, tx) => {
+  // items : cartItems
+  try {
+    for (const item of items) {
+      const inventoryItem = await tx.inventory.update({
+        where: {
+          productId: item.productId,
+        },
+        data: {
+          quantity: {
+            decrement: item.quantity,
+          },
+        },
+      });
+      if (!inventoryItem)
+        throw new AppError(
+          `Failed to decrease inventory for ${item.product.name}`,
+          500,
+        );
+    }
+  } catch (error) {
+    if (error instanceof AppError) throw err;
+    throw new AppError(`Internal Server Error: ${err.message}`);
+  }
+};
+
+export const createProductInInventoryWithTx = async (productId, tx) => {
+  try {
+    const inventory = await tx.inventory.create({
+      data: {
+        productId: productId,
+        quantity: 1, // default quantity for new product
+      },
+    });
+    return inventory;
+  } catch (error) {
+    if (error instanceof AppError) throw err;
+    throw new AppError(`Internal Server Error: ${err.message}`);
   }
 };

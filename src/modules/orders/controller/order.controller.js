@@ -1,82 +1,70 @@
 import { asyncWrapper } from "../../../../utils/asyncWrapper.js";
+import successResponse from "../../../../utils/responseHelper.js";
 import * as orderServices from "../service/order.service.js";
 
 export const createOrderController = asyncWrapper(async (req, res) => {
+  const userId = req.user.id;
+  // const items = req.body.items;
+  // const totalAmount = req.body.totalAmount;
+  const addressId = req.params.id;
 
-  const userId = req.body.id;
-  const items = req.body.items;
-  const totalAmount = req.body.totalAmount;
-  const addressId = req.body.addressId;
+  const createdOrder = await orderServices.createOrderService({
+    userId,
+    // items,
+    // totalAmount,
+    addressId,
+  });
 
-  const createdOrder = await orderServices.createOrderService({ userId, items, totalAmount, addressId });
-
-  res.status(201).json({
-    status: true,
-    message: 'Order Created',
-    date: createdOrder,
-  })
+  successResponse(res, createdOrder, "Order Created", 201);
 });
 
 export const getOrdersController = asyncWrapper(async (req, res) => {
-
   const order = await orderServices.getOrdersService();
 
-  res.status(200).json({
-    status: true,
-    message: 'Successfully Retrieved',
-    date: order,
-  });
-
+  successResponse(res, order, "Orders Retrieved", 200);
 });
 
 export const getOrderByIdController = asyncWrapper(async (req, res) => {
+  const orderId = req.params.id;
 
-  const productId = req.params.id;
+  const order = await orderServices.getOrderByIdService(orderId);
 
-  const order = await orderServices.getOrderByIdService(productId);
-
-  res.status(200).json({
-    status: true,
-    message: 'Successfully Retrieved',
-    date: order,
-  })
+  successResponse(res, order, "Order Retrieved", 200);
 });
 
 export const updateOrderStatusController = asyncWrapper(async (req, res) => {
-  const productId = req.params.id;
+  const orderId = req.params.id;
   const status = req.query.status;
+  // console.log("updateOrderStatusController", orderId, status);
 
-  const updatedOrder = await orderServices.updateOrderStatusService(productId, status);
+  //  ! here we have to check what status is allowed to update or not.
 
-  res.status(201).json({
-    status: true,
-    message: 'Order Updated',
-    date: updatedOrder,
-  })
+  const updatedOrder = await orderServices.updateOrderStatusService(
+    orderId,
+    status,
+  );
+
+  successResponse(res, updatedOrder, "Order Updated", 201);
 });
 
 export const updatePaymentStatusController = asyncWrapper(async (req, res) => {
-  const productId = req.params.id;
-  const paymentStatus = req.query.paymentStatus;
+  const orderId = req.params.id;
+  const paymentStatus = req.query.status;
 
-  const updatedOrder = await orderServices.updatePaymentStatusService(productId, paymentStatus);
+  //  ! here we have to check what status is allowed to update or not.
 
-  res.status(201).json({
-    status: true,
-    message: 'Status Updated',
-    date: updatedOrder,
-  })
+  const updatedOrder = await orderServices.updatePaymentStatusService(
+    orderId,
+    paymentStatus,
+  );
+
+  successResponse(res, updatedOrder, "Payment Status Updated", 201);
 });
 
 export const cancelOrderController = asyncWrapper(async (req, res) => {
+  const orderId = req.params.id;
 
-  const productId = req.query.id;
+  const canceledOrder = await orderServices.cancelOrderService(orderId);
 
-  const deletedOrder = await orderServices.cancelOrderService(productId);
-
-  res.status(201).json({
-    status: true,
-    message: 'Order Deleted',
-    date: deletedOrder,
-  })
+  successResponse(res, canceledOrder, "Order Cancelled", 201);
 });
