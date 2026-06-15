@@ -2,9 +2,11 @@ import { prisma } from "../../../../clients/pg-client.js";
 import AppError from "../../../../utils/AppError.js";
 import { createProductInInventoryWithTx } from "../../inventory/repositories/inventory.repository.js";
 
-export const getAllProduct = async (limit) => {
+export const getAllProduct = async (sellerId, limit = 10) => {
   try {
     const products = await prisma.product.findMany({
+      // ! need to creat sellerId in product table.
+      // whered
       take: limit,
     });
     // console.log("Products retrieved from database:", products);
@@ -12,6 +14,41 @@ export const getAllProduct = async (limit) => {
   } catch (err) {
     console.error("Interval Server Error :", err.message);
     throw new AppError(`Interval Server Error : ${err.message}`);
+  }
+};
+
+export const getProductsByFilter = async (filters) => {
+  try {
+    // const { page = 1, limit = 10, sortBy, order = "asc", ...filters } = query;
+
+    // const where = {};
+
+    // Object.entries(filters).forEach(([key, value]) => {
+    //   if (value !== undefined && value !== "") {
+    //     where[key] = value;
+    //   }
+    // });
+
+    // return prisma.product.findMany({
+    //   where,
+    //   orderBy: sortBy
+    //     ? {
+    //         [sortBy]: order,
+    //       }
+    //     : undefined,
+    //   skip: (Number(page) - 1) * Number(limit),
+    //   take: Number(limit),
+    // });
+    if (filters.price) {
+      filters.price = Number(filters.price);
+    }
+    const filteredProducts = await prisma.product.findMany({
+      where: filters,
+    });
+    return filteredProducts;
+  } catch (err) {
+    console.error("Internal Server Error : ", err.message);
+    throw new AppError(`Internal Server Error : ${err.message}`);
   }
 };
 

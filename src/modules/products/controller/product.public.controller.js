@@ -7,27 +7,11 @@ export const getAllProducts = asyncWrapper(async (req, res) => {
   return successResponse(res, products, "Products retrieved successfully", 200);
 });
 
-export const searchProducts = asyncWrapper(async (req, res) => {
-  const productName = req.query.name; // e.g., /products/search?name=phone
-  const products = await productService.searchProductService(productName);
-  return successResponse(res, products, "Products retrieved successfully", 200);
-});
+export const getProductsByFilter = asyncWrapper(async (req, res) => {
+  const filters = req.query;
+  // const price = filters.price ? Number(filters.price) : undefined;
 
-export const getPaginatedProducts = asyncWrapper(async (req, res) => {
-  const { page, limit } = req.query; // e.g., /products/browse?page=2&limit=10
-  const products = await productService.getPaginatedProductsService(
-    page,
-    limit,
-  );
-  return successResponse(res, products, "Products retrieved successfully", 200);
-});
+  const products = await productService.getProductsFilterService(filters);
 
-export const getSortedProducts = asyncWrapper(async (req, res) => {
-  const { type, sortBy, order } = req.query;
-  const products = await productService.getSortedProductsService(
-    type,
-    sortBy,
-    order,
-  );
   return successResponse(res, products, "Products retrieved successfully", 200);
 });
