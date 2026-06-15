@@ -35,7 +35,7 @@ router.get(
   validateAuthentication,
   authorize("ADMIN"),
   (req, res) => {
-    console.log("admin protected route : ", req.body);
+    console.log("Admin protected route : ", req.body);
   },
 );
 

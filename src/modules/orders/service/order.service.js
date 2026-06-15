@@ -11,8 +11,12 @@ import AppError from "../../../../utils/AppError.js";
 export const createOrderService = async (orderDetails) => {
   try {
     const order = await createOrder(orderDetails);
+    if(!order){
+      throw new AppError('Failed to create Order', 400); 
+    }
     return order;
   } catch (error) {
+    if(error instanceof AppError) throw error;
     throw new AppError(`Order is not Created, ${error.message}`, 500);
   }
 };
@@ -33,9 +37,6 @@ export const getOrdersService = async () => {
 
 export const getOrderByIdService = async (orderId) => {
   try {
-    if (!orderId) {
-      throw new AppError("Missing Id", 400);
-    }
     const order = await getOrderById(orderId);
     if (!order) {
       throw new AppError("Order Not Found", 404);
@@ -49,13 +50,23 @@ export const getOrderByIdService = async (orderId) => {
 
 export const updateOrderStatusService = async (orderId, status) => {
   try {
-    if (!orderId) {
-      throw new AppError("Missing Id", 400);
-    }
+    
+    /*
+    pending, 
+    cancelled, 
+    confirmed, 
+    shippped, 
+    delivered, 
+  */
+
+    //  * here we have to check what status is allowed to update or not.
+    // if(status === 'CANCELLED' || status === 'DELIVERED'){
+    //    throw new AppError(`Status not valid`, 400); 
+    // }
     const updatedOrder = await updateOrderStatus(orderId, status);
 
     return updatedOrder;
-  } catch (error) {
+  }catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(`Failed to update order status ${error.message}`, 500);
   }
@@ -63,9 +74,16 @@ export const updateOrderStatusService = async (orderId, status) => {
 
 export const updatePaymentStatusService = async (orderId, paymentStatus) => {
   try {
-    if (!orderId) {
-      throw new AppError("Missing Id", 400);
-    }
+
+    /*
+      pending,
+      paid, 
+      failed,
+      refunded
+    */
+    // if(paymentStatus === 'FAILED' || paymentStatus === 'PAID' || paymentStatus === 'REFUNDED'){
+    //   throw new AppError('Payment status not valid', 400); 
+    // }
     const updatedOrder = await updatePaymentStatus(orderId, paymentStatus);
 
     return updatedOrder;
@@ -77,9 +95,6 @@ export const updatePaymentStatusService = async (orderId, paymentStatus) => {
 
 export const cancelOrderService = async (orderId) => {
   try {
-    if (!orderId) {
-      throw new AppError("Missing Id", 400);
-    }
     const cancelledOrder = await cancelOrder(orderId);
     if (!cancelledOrder) {
       throw new AppError("Order Not Found", 404);
