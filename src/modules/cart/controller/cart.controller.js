@@ -1,5 +1,5 @@
 import * as cartService from "../service/cart.service.js";
-import AppError from "../../../../utils/appError.js";
+import AppError from "../../../../utils/AppError.js";
 import successResponse from "../../../../utils/responseHelper.js";
 
 export const getCartController = async (req, res) => {
@@ -21,7 +21,10 @@ export const addItemToCartController = async (req, res) => {
     // const userId = req.params.id;
     const productId = req.params.itemId;
 
-    const quantity = Number(req.query.quantity);
+    let quantity = 1;
+    if (req.query.quantity) {
+      quantity = Number(req.query.quantity);
+    }
 
     // console.log("addItemToCartController", userId, productId, quantity);
 

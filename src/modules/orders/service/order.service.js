@@ -11,6 +11,7 @@ import AppError from "../../../../utils/AppError.js";
 export const createOrderService = async (orderDetails) => {
   try {
     const order = await createOrder(orderDetails);
+    return order;
   } catch (error) {
     throw new AppError(`Order is not Created, ${error.message}`, 500);
   }

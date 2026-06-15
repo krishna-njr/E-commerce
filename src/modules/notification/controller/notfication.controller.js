@@ -1,5 +1,5 @@
 import * as notificationService from "../service/notification.service.js";
-import AppError from "../../../../utils/appError.js";
+import AppError from "../../../../utils/AppError.js";
 import successResponse from "../../../../utils/responseHelper.js";
 
 export const createNotificationController = async (req, res) => {
