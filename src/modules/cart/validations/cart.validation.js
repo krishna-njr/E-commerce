@@ -2,13 +2,15 @@ import z from "zod";
 
 const uuidSchema = z.string().uuid("Invalid UUID format");
 
-const quantitySchema = z.number().min(1, "Quantity must be a positive integer");
+const quantitySchema = z.coerce
+  .number()
+  .min(1, "Quantity must be a positive integer");
 
 export const addToCartSchema = z.object({
   params: z.object({
     itemId: uuidSchema,
   }),
-  body: z.object({
+  query: z.object({
     quantity: quantitySchema,
   }),
 });

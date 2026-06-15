@@ -57,6 +57,7 @@ export const updateCartItemQuantityService = async (
     }
     return await cartRepository.updateCartItem(itemId, quantity);
   } catch (error) {
+    if (error instanceof AppError) throw error;
     throw new AppError(
       `Failed to update cart item quantity: ${error.message}`,
       500,
@@ -73,6 +74,7 @@ export const removeCartItemService = async (userId, itemId) => {
     }
     return await cartRepository.deleteCartItem(itemId);
   } catch (error) {
+    if (error instanceof AppError) throw error;
     throw new AppError(`Failed to remove cart item: ${error.message}`, 500);
   }
 };

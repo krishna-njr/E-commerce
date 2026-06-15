@@ -21,7 +21,7 @@ export const addItemToCartController = async (req, res) => {
     // const userId = req.params.id;
     const productId = req.params.itemId;
 
-    const quantity = req.query.quantity;
+    const quantity = Number(req.query.quantity);
 
     // console.log("addItemToCartController", userId, productId, quantity);
 
@@ -41,7 +41,7 @@ export const updateCartItemQuantityController = async (req, res) => {
   try {
     const userId = req.user.id;
     const itemId = req.params.itemId;
-    const quantity = req.query.quantity;
+    const quantity = Number(req.query.quantity);
 
     // schema validation
     const updatedCart = await cartService.updateCartItemQuantityService(
