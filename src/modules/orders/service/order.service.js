@@ -25,9 +25,6 @@ export const createOrderService = async (orderDetails) => {
 export const getOrdersService = async () => {
   try {
     const orders = await getOrders();
-    if (orders.length < 1) {
-      throw new AppError(`Order Not Found`, 404);
-    }
 
     return orders;
   } catch (error) {
@@ -61,6 +58,7 @@ export const updateOrderStatusService = async (orderId, status) => {
   */
 
     //  * here we have to check what status is allowed to update or not.
+    // ! use transaction state : 
     const { orderStatus } = await getOrderStatus(orderId); ;  
 
       if(orderStatus === 'CANCELLED' || orderStatus === 'DELIVERED'){
