@@ -8,12 +8,7 @@ import {
 
 export const registerUserController = asyncWrapper(async (req, res) => {
   const userDetails = req.body;
-  // in body :
-  //  email,
-  // password,
-  // fullName,
-  // phoneNumber,
-  // role,
+
   const user = await registerUserService(userDetails);
 
   successResponse(res, user, "User created successfully", 201);
