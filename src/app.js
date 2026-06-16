@@ -15,10 +15,11 @@ import errorHandler from "./shared/errorHandler.middleware.js";
 // import limiter from "../utils/rateLimit.js";
 import redisClient from "../clients/redis.client.js";
 import rateLimit from "../utils/rateLimit.js";
+import { rateLimitMiddleware } from "../utils/limit.middleware.js";
 
 const app = express();
 
-const limiter = await rateLimit(app, redisClient); 
+// const limiter = await rateLimit(app, redisClient); 
 
 app.use(express.json());
 
@@ -26,7 +27,7 @@ app.use(morgan("dev"));
 
 // app.use(limiter); 
 
-app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/users", rateLimitMiddleware({ limit : 4, window : 60 }) , userRoutes);
 
 app.use("/api/v1/products", publicProductRoutes);
 
