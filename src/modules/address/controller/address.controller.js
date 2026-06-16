@@ -46,6 +46,7 @@ export const updateAddressController = async (req, res) => {
   try {
     const addressId = req.params.id;
     const addressDetails = req.body;
+    console.log(`inside updateAddressController ${addressId}, ${addressDetails}`)
     // schema validation :
     const updatedAddress = await updateAddressService(
       addressId,

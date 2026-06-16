@@ -1,5 +1,5 @@
 import * as notificationRepository from "../repositories/notification.repository.js";
-import AppError from "../../../../utils/appError.js";
+import AppError from "../../../../utils/AppError.js";
 
 export const createNotificationService = async (notificationData) => {
   try {

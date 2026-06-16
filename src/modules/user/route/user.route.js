@@ -10,7 +10,6 @@ import {
   validateRequest,
 } from "../middleware/user.middleware.js";
 import {
-  getUserSchema,
   loginUserSchema,
   registerUserSchema,
 } from "../validations/user.validation.js";
@@ -27,18 +26,16 @@ router.post("/login", validateRequest(loginUserSchema), loginUserController);
 
 router.get(
   "/profile",
-  validateRequest(getUserSchema),
   validateAuthentication,
   getUserController,
 );
 
 router.get(
   "/admin/profile",
-  validateRequest(getUserSchema),
   validateAuthentication,
   authorize("ADMIN"),
   (req, res) => {
-    console.log("admin protected route : ", req.body);
+    console.log("Admin protected route : ", req.body);
   },
 );
 

@@ -31,8 +31,8 @@ export const loginUserSchema = z.object({
   }),
 });
 
-export const getUserSchema = z.object({
-  user: z.object({
-    id: uuidSchema,
-  }),
-});
+// export const getUserSchema = z.object({
+//   user: z.object({
+//     id: uuidSchema,
+//   }),
+// });

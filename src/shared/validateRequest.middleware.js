@@ -15,14 +15,14 @@ const validateRequest = (schema) => async (req, res, next) => {
     console.log("Validation successful", parsedData);
     next();
   } catch (error) {
-    if (error instanceof ZodError) {
-      return next(
-        new AppError(
-          error.issues.map((issue) => issue.message).join(", "),
-          400,
-        ),
-      );
-    }
+    // if (error instanceof ZodError) {
+    //   return next(
+    //     new AppError(
+    //       error.issues.map((issue) => issue.message).join(", "),
+    //       400,
+    //     ),
+    //   );
+    // }
 
     next(error);
   }

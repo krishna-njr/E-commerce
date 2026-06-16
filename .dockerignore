@@ -3,3 +3,7 @@
 # comments : 
 
 node_modules
+.git
+.vscode
+.env
+src/generated

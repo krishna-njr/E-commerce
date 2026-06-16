@@ -12,8 +12,9 @@ export const createOrderSchema = z.object({
 export const getOrderByIdSchema = createOrderSchema;
 
 export const updateOrderStatusSchema = z.object({
-  ...createOrderSchema.shape.params,
-
+  params: z.object({
+    id: uuidSchema,
+  }),
   query: z.object({
     status: z.enum([
       "PENDING",
@@ -26,7 +27,9 @@ export const updateOrderStatusSchema = z.object({
 });
 
 export const updatePaymentStatusSchema = z.object({
-  ...createOrderSchema.shape.params,
+  params: z.object({
+    id: uuidSchema,
+  }),
 
   query: z.object({
     status: z.enum(["PENDING", "PAID", "FAILED", "REFUNDED"]),
@@ -34,5 +37,7 @@ export const updatePaymentStatusSchema = z.object({
 });
 
 export const cancelOrderSchema = z.object({
-  ...createOrderSchema.shape.params,
+  params: z.object({
+    id: uuidSchema,
+  }),
 });
