@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -36,24 +37,24 @@ enum DeliveryStatus {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  fullName      String
-  email         String         @unique
-  password      String
-  role          UserRole       @default(CUSTOMER)
-  phoneNumber   String?
+  id          String   @id @default(uuid())
+  fullName    String
+  email       String   @unique
+  password    String
+  role        UserRole @default(CUSTOMER)
+  phoneNumber String?
 
   addresses     Address[]
   cart          Cart?
   orders        Order[]
   notifications Notification[]
 
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Address {
-  id          String    @id @default(uuid())
+  id          String @id @default(uuid())
   fullName    String
   phoneNumber String
   street      String
@@ -62,127 +63,126 @@ model Address {
   country     String
   postalCode  String
 
-  orders      Order[]
+  orders Order[]
 
-  userId      String
-  user        User      @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Product {
-  id            String      @id @default(uuid())
-  name          String
-  description   String?
-  price         Decimal     
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal
 
-  inventory     Inventory?
+  inventory Inventory?
 
-  cartItems     CartItem[]
-  orderItems    OrderItem[]
+  cartItems  CartItem[]
+  orderItems OrderItem[]
 
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Inventory {
-  id          String    @id @default(uuid())
-  quantity    Int       @default(0)
+  id       String @id @default(uuid())
+  quantity Int    @default(0)
 
-  productId   String    @unique
-  product     Product   @relation(fields: [productId], references: [id])
+  productId String  @unique
+  product   Product @relation(fields: [productId], references: [id])
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Cart {
-  id          String      @id @default(uuid())
+  id String @id @default(uuid())
 
-  items       CartItem[]
+  items CartItem[]
 
-  userId      String      @unique
-  user        User        @relation(fields: [userId], references: [id])
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model CartItem {
-  id          String    @id @default(uuid())
-  quantity    Int       @default(1)
+  id       String @id @default(uuid())
+  quantity Int    @default(1)
 
-  productId   String
-  product     Product   @relation(fields: [productId], references: [id])
-  cartId      String
-  cart        Cart      @relation(fields: [cartId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id])
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([cartId, productId])
 }
 
 model Order {
-  id              String          @id @default(uuid())
-  orderStatus     OrderStatus     @default(PENDING)
-  paymentStatus   PaymentStatus   @default(PENDING)
+  id            String        @id @default(uuid())
+  orderStatus   OrderStatus   @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
 
-  totalAmount     Decimal        
+  totalAmount Decimal
 
-  items           OrderItem[]
-  delivery        Delivery?
+  items    OrderItem[]
+  delivery Delivery?
 
-  userId          String
-  user            User            @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  addressId       String
-  address         Address         @relation(fields: [addressId], references: [id])
+  addressId String
+  address   Address @relation(fields: [addressId], references: [id])
 
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model OrderItem {
-  id            String     @id @default(uuid())
-  quantity      Int
-  price         Decimal    
+  id       String  @id @default(uuid())
+  quantity Int
+  price    Decimal
 
-  orderId       String
-  order         Order      @relation(fields: [orderId], references: [id])
-  productId     String
-  product       Product    @relation(fields: [productId], references: [id])
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
 
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Delivery {
-  id              String           @id @default(uuid())
-  trackingNumber  String?          @unique
-  deliveryStatus  DeliveryStatus   @default(PENDING)
+  id             String         @id @default(uuid())
+  trackingNumber String?        @unique
+  deliveryStatus DeliveryStatus @default(PENDING)
 
+  arrivalDate DateTime?
+  deliveredAt DateTime?
 
-  arrivalDate   DateTime?
-  deliveredAt     DateTime?
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id])
 
-  orderId         String           @unique
-  order           Order            @relation(fields: [orderId], references: [id])
-
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Notification {
-  id          String    @id @default(uuid())
-  title       String
-  message     String
+  id      String @id @default(uuid())
+  title   String
+  message String
 
-  isRead      Boolean   @default(false)
+  isRead Boolean @default(false)
 
-  userId      String
-  user        User      @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  createdAt   DateTime  @default(now())
+  createdAt DateTime @default(now())
 }
