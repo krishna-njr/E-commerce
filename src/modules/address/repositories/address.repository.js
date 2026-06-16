@@ -1,4 +1,4 @@
-import { prisma } from "../../../../clients/pg-client.js";
+import { prisma } from "../../../../clients/prisma.client.js";
 import AppError from "../../../../utils/AppError.js";
 import { getAddressesService } from "../service/address.service.js";
 
