@@ -27,9 +27,17 @@ export const registerUserSchema = z.object({
 export const loginUserSchema = z.object({
   body: z.object({
     email: emailSchema,
-    password: z.string().min(6, "Password is required"),
+    password: z.string("Password is required"),
   }),
 });
+
+export const refreshTokenSchema = z.object({
+  body: z.object({
+    refreshToken: z.string("Refresh token is required"),
+  }),
+});
+
+export const logoutSchema = refreshTokenSchema;
 
 // export const getUserSchema = z.object({
 //   user: z.object({
