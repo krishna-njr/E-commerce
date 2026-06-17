@@ -44,6 +44,7 @@ model User {
   role        UserRole @default(CUSTOMER)
   phoneNumber String?
 
+  refreshToken refreshToken[]
   addresses     Address[]
   cart          Cart?
   orders        Order[]
@@ -51,6 +52,20 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model refreshToken{
+  id String @id @default(uuid())
+  tokenHash String @unique
+  
+  userId String
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  revokedAt DateTime?
+
+  isRevoked Boolean @default(false)
 }
 
 model Address {
