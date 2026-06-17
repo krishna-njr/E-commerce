@@ -1,7 +1,7 @@
 import { asyncWrapper } from "../../../../utils/asyncWrapper.js";
 import * as productService from "../service/product.service.js";
 import successResponse from "../../../../utils/responseHelper.js";
-import AppError from "../../../../utils/appError.js";
+import AppError from "../../../../utils/AppError.js";
 
 export const getSellerProductsController = asyncWrapper(async (req, res) => {
   const sellerId = req.user.id;

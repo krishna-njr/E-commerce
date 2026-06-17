@@ -3,9 +3,8 @@ import successResponse from "../../../../utils/responseHelper.js";
 import * as orderServices from "../service/order.service.js";
 
 export const createOrderController = asyncWrapper(async (req, res) => {
+
   const userId = req.user.id;
-  // const items = req.body.items;
-  // const totalAmount = req.body.totalAmount;
   const addressId = req.params.id;
 
   const createdOrder = await orderServices.createOrderService({
@@ -19,12 +18,14 @@ export const createOrderController = asyncWrapper(async (req, res) => {
 });
 
 export const getOrdersController = asyncWrapper(async (req, res) => {
+  
   const order = await orderServices.getOrdersService();
 
   successResponse(res, order, "Orders Retrieved", 200);
 });
 
 export const getOrderByIdController = asyncWrapper(async (req, res) => {
+  
   const orderId = req.params.id;
 
   const order = await orderServices.getOrderByIdService(orderId);
@@ -33,12 +34,9 @@ export const getOrderByIdController = asyncWrapper(async (req, res) => {
 });
 
 export const updateOrderStatusController = asyncWrapper(async (req, res) => {
+  
   const orderId = req.params.id;
   const status = req.query.status;
-  // console.log("updateOrderStatusController", orderId, status);
-
-  //  ! here we have to check what status is allowed to update or not.
-
   const updatedOrder = await orderServices.updateOrderStatusService(
     orderId,
     status,
@@ -48,10 +46,9 @@ export const updateOrderStatusController = asyncWrapper(async (req, res) => {
 });
 
 export const updatePaymentStatusController = asyncWrapper(async (req, res) => {
+  
   const orderId = req.params.id;
   const paymentStatus = req.query.status;
-
-  //  ! here we have to check what status is allowed to update or not.
 
   const updatedOrder = await orderServices.updatePaymentStatusService(
     orderId,

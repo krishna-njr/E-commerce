@@ -1,4 +1,4 @@
-import AppError from "../../../../utils/appError.js";
+import AppError from "../../../../utils/AppError.js";
 import * as inventoryRepository from "../repositories/inventory.repository.js";
 
 export const createInventoryService = async ({ productId, quantity }) => {

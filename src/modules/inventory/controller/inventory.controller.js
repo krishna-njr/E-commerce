@@ -1,5 +1,5 @@
 import * as inventoryService from "../service/inventory.service.js";
-import AppError from "../../../../utils/appError.js";
+import AppError from "../../../../utils/AppError.js";
 import successResponse from "../../../../utils/responseHelper.js";
 
 export const createInventoryController = async (req, res) => {

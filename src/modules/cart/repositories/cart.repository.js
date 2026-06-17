@@ -1,5 +1,5 @@
-import { prisma } from "../../../../clients/pg-client.js";
-import AppError from "../../../../utils/appError.js";
+import { prisma } from "../../../../clients/prisma.client.js";
+import AppError from "../../../../utils/AppError.js";
 
 export const findCartByUserId = async (userId) => {
   try {

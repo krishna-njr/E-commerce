@@ -1,5 +1,5 @@
 import * as cartRepository from "../repositories/cart.repository.js";
-import AppError from "../../../../utils/appError.js";
+import AppError from "../../../../utils/AppError.js";
 
 export const getCartService = async (userId) => {
   try {
@@ -12,12 +12,12 @@ export const getCartService = async (userId) => {
 
 export const addItemToCartService = async (userId, productId, quantity) => {
   try {
-    let cart = await cartRepository.findCartByUserId(userId);
-    if (!cart) {
-      cart = await cartRepository.createCart(userId);
+    let userCart = await cartRepository.findCartByUserId(userId);
+    if (!userCart) {
+      userCart = await cartRepository.createCart(userId);
     }
 
-    const existingItem = await cartRepository.findCartItem(cart.id, productId);
+    const existingItem = await cartRepository.findCartItem(userCart.id, productId);
     if (existingItem) {
       return await cartRepository.updateCartItem(
         existingItem.id,
@@ -26,7 +26,7 @@ export const addItemToCartService = async (userId, productId, quantity) => {
     } else {
       // console.log("addItemToCartService", userId, productId, quantity);
       return await cartRepository.createCartItem({
-        cartId: cart.id,
+        cartId: userCart.id,
         productId,
         quantity,
       });
