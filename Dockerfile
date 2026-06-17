@@ -1,9 +1,12 @@
-
 FROM node:alpine
 
-COPY package.json package-lock.json .
+WORKDIR /app
 
-RUN npm install 
+COPY package*.json ./
+
+RUN npm install
+
+COPY prisma ./prisma
 
 RUN npx prisma generate
 

@@ -2,6 +2,8 @@ import { Router } from "express";
 import {
   getUserController,
   loginUserController,
+  logoutController,
+  refreshTokenController,
   registerUserController,
 } from "../controller/user.controller.js";
 import {
@@ -11,6 +13,8 @@ import {
 } from "../middleware/user.middleware.js";
 import {
   loginUserSchema,
+  logoutSchema,
+  refreshTokenSchema,
   registerUserSchema,
 } from "../validations/user.validation.js";
 
@@ -24,19 +28,20 @@ router.post(
 
 router.post("/login", validateRequest(loginUserSchema), loginUserController);
 
-router.get(
-  "/profile",
+router.post(
+  "/refresh",
   validateAuthentication,
-  getUserController,
+  validateRequest(refreshTokenSchema),
+  refreshTokenController,
 );
 
-router.get(
-  "/admin/profile",
+router.post(
+  "/logout",
   validateAuthentication,
-  authorize("ADMIN"),
-  (req, res) => {
-    console.log("Admin protected route : ", req.body);
-  },
+  validateRequest(logoutSchema),
+  logoutController,
 );
+
+router.get("/profile", validateAuthentication, getUserController);
 
 export { router };
