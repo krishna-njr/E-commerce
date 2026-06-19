@@ -1,5 +1,5 @@
-import bcrypt from "bcrypt";
+import crypto from "crypto";
 
-export const hash = (data) => {
-  return bcrypt.hashSync(data, 10);
+export const hashToken = (token) => {
+  return crypto.createHash("sha256").update(token).digest("hex");
 };

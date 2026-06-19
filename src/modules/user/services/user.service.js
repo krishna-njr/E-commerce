@@ -3,12 +3,17 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../../../../utils/generateToken.js";
+import { hashToken } from "../../../../utils/hash.js";
 import { comparePassword, hashPassword } from "../../../../utils/password.js";
+import verifyToken from "../../../../utils/verifyToken.js";
 import {
+  createRefreshToken,
   createUser,
+  findRefreshToken,
   findUserByEmail,
   findUserById,
   getUserWithEmailAndPassword,
+  revokeRefreshTokensForUser,
   updateUserById,
 } from "../repositories/user.repository.js";
 
@@ -54,6 +59,14 @@ export const loginUserService = async ({ email, password }) => {
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
+  const hashedRefreshToken = await hashToken(refreshToken);
+
+  const refreshTokenRecord = await createRefreshToken({
+    tokenHash: hashedRefreshToken,
+    userId: user.id,
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days expiry
+  });
+  // console.log("Refresh token record created: ", refreshTokenRecord);
   // console.log('inside loginUserService : ', user);
   const { password: _, ...sanitizeUser } = user;
   return { user: sanitizeUser, accessToken, refreshToken };
@@ -131,7 +144,3 @@ export const logoutService = async (refreshToken) => {
 
   return true;
 };
-
-// update user details
-// Forgot Password
-// Reset/Change password
