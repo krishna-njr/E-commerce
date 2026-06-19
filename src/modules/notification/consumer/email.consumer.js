@@ -1,9 +1,19 @@
+import amrp from "amqplib";
+import nodemailer from "nodemailer";
 import AppError from "../../../../utils/AppError.js";
 import { getChannel } from "../../../shared/rabbitmq/connection.js";
 
-import amrp from "amqplib";
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASSWORD,
+  },
+});
 
-const consumeEmail = async (payload) => {
+const consumeEmail = async () => {
   const channel = getChannel();
 
   // * put in .env.
@@ -27,6 +37,13 @@ const consumeEmail = async (payload) => {
     // console.log(message); buffer data :
     try {
       const data = JSON.parse(message.content.toString());
+      // ? Node mailer part :
+      await transporter.sendMail({
+        from: data.from,
+        to: data.to,
+        subject: "Notification from E-commerce App",
+        text: data.message,
+      });
       console.log(`Node mailer part`, data);
       channel.ack(message); // *********************
     } catch (error) {

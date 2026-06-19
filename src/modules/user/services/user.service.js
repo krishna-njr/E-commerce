@@ -79,8 +79,6 @@ export const updateUserDetailService = async (userDetails) => {
   }
   return updatedUser;
 };
-<<<<<<< Updated upstream
-=======
 
 // ! Refresh Token Logic
 
@@ -137,4 +135,3 @@ export const logoutService = async (refreshToken) => {
 // update user details
 // Forgot Password
 // Reset/Change password
->>>>>>> Stashed changes
