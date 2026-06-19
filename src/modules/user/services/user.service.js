@@ -80,10 +80,6 @@ export const getUserDetailService = async (userId) => {
   return user;
 };
 
-// update user details
-// Forgot Password
-// Reset/Change password
-
 export const updateUserDetailService = async (userDetails) => {
   const userId = userDetails.id;
   if (!userId) {

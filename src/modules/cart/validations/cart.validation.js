@@ -4,7 +4,8 @@ const uuidSchema = z.string().uuid("Invalid UUID format");
 
 const quantitySchema = z.coerce
   .number()
-  .min(1, "Quantity must be a positive integer");
+  .min(1, "Quantity must be a positive integer")
+  .optional();
 
 export const addToCartSchema = z.object({
   params: z.object({

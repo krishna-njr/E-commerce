@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.19.3",
+    "amqplib": "^2.0.1",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
@@ -20,7 +21,9 @@
     "express-limiter": "^1.6.1",
     "ioredis": "^5.11.1",
     "jsonwebtoken": "^9.0.3",
+    "mailtrap": "^4.6.0",
     "morgan": "^1.11.0",
+    "nodemailer": "^8.0.11",
     "nodemon": "^3.1.14",
     "pg": "^8.21.0",
     "prisma": "^6.19.3",
