@@ -67,10 +67,6 @@ export const getUserDetailService = async (userId) => {
   return user;
 };
 
-// update user details
-// Forgot Password
-// Reset/Change password
-
 export const updateUserDetailService = async (userDetails) => {
   const userId = userDetails.id;
   if (!userId) {
@@ -83,3 +79,62 @@ export const updateUserDetailService = async (userDetails) => {
   }
   return updatedUser;
 };
+<<<<<<< Updated upstream
+=======
+
+// ! Refresh Token Logic
+
+export const refreshTokenService = async (refreshToken) => {
+  if (!refreshToken) {
+    throw new AppError("Invalid Credentials", 400);
+  }
+  let payload;
+  try {
+    payload = await verifyToken(refreshToken, "refresh");
+  } catch (error) {
+    throw new AppError("Invalid Credentials", 400);
+  }
+
+  const tokenHash = await hashToken(refreshToken);
+
+  const storedToken = await findRefreshToken(tokenHash);
+
+  if (!storedToken) {
+    throw new AppError("Invalid Credentials", 400);
+  }
+
+  if (storedToken.expiresAt < new Date()) {
+    throw new AppError("Refresh Token Expired", 400);
+  }
+
+  // rotate token :
+  const newAccessToken = generateAccessToken(storedToken.user);
+  const newRefreshToken = generateRefreshToken(storedToken.user);
+
+  await revokeRefreshTokensForUser(tokenHash);
+
+  const newTokenHash = await hashToken(newRefreshToken);
+  await createRefreshToken({
+    tokenHash: newTokenHash,
+    userId: storedToken.userId,
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days expiry
+  });
+
+  return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+};
+
+export const logoutService = async (refreshToken) => {
+  if (!refreshToken) {
+    throw new AppError("Invalid Credentials", 400);
+  }
+  const tokenHash = await hashToken(refreshToken);
+  // console.log("Token hash to revoke : ", tokenHash);
+  await revokeRefreshTokensForUser(tokenHash);
+
+  return true;
+};
+
+// update user details
+// Forgot Password
+// Reset/Change password
+>>>>>>> Stashed changes
