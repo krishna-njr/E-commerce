@@ -2,7 +2,7 @@ import { getChannel } from "../../../shared/rabbitmq/connection.js";
 
 import amrp from "amqplib";
 
-const publishMessage = async (payload) => {
+const produceEmail = async (emailPayload) => {
   const channel = getChannel();
 
   // * put in .env.
@@ -17,16 +17,16 @@ const publishMessage = async (payload) => {
 
   await channel.bindQueue(queueName, exchange, routingKeyForMailSend);
 
-  const dataBuffer = Buffer.from(JSON.stringify(payload));
+  const dataBuffer = Buffer.from(JSON.stringify(emailPayload));
 
   channel.publish(exchange, routingKeyForMailSend, dataBuffer);
 
-  console.log(`Mail is send to user with this payload : `, payload);
+  console.log(`Mail is send to rabbitmq Queue : ${queueName}`);
 };
 
-export default publishMessage;
+export default produceEmail;
 
-// publishMessage({
+// produceEmail({
 //   from: "userEmail@gmail.com",
 //   to: "krishna.perpetual@gmail.com",
 //   message: "order is placed",

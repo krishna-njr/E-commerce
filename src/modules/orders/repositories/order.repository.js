@@ -6,10 +6,16 @@ import {
 } from "../../cart/repositories/cart.repository.js";
 import { createDeliveryWithTx } from "../../delivery/repositories/delivery.repository.js";
 import { decreaseInventoryItemsQuantityWithTx } from "../../inventory/repositories/inventory.repository.js";
+import produceEmail from "../../notification/producer/email.producer.js";
 import { createNotificationWithTx } from "../../notification/repositories/notification.repository.js";
+import { findUserById } from "../../user/repositories/user.repository.js";
 
 export const createOrder = async ({ userId, addressId }) => {
   try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
     return await prisma.$transaction(async (tx) => {
       // 1. get user cart
       const cart = await getCartByIdWithTx(userId, tx);
@@ -48,7 +54,14 @@ export const createOrder = async ({ userId, addressId }) => {
       // console.log("delivery", delivery);
 
       // 9 notfication :
-      const notfication = await createNotificationWithTx(userId, order.id, tx);
+      // const notfication = await createNotificationWithTx(userId, order.id, tx);
+      await produceEmail({
+        from: "noreply@ecommerce.com",
+        // to: user.email,
+        to: "keshavverma020@gmail.com",
+        subject: "Order Placed",
+        message: `Your order has been placed successfully with order id : ${order.id}`,
+      });
       // console.log("notfication", notfication);
 
       // 10 return order
@@ -93,21 +106,21 @@ export const getOrderById = async (id) => {
 };
 
 export const getOrderStatus = async (id) => {
-  try{
+  try {
     const status = await prisma.order.findUnique({
-      where: {id}, 
+      where: { id },
       // select: {
-      //   orderStatus: true, 
-      //   paymentStatus: true, 
-      // }  
+      //   orderStatus: true,
+      //   paymentStatus: true,
+      // }
     });
-    // console.log(`inside getOrderStatus repo : ${status}`); 
-    // console.log(JSON.stringify(status)); 
-    return status; 
-  }catch(error){
-    throw new AppError(`Internal Server Error : ${error.message}`); 
+    // console.log(`inside getOrderStatus repo : ${status}`);
+    // console.log(JSON.stringify(status));
+    return status;
+  } catch (error) {
+    throw new AppError(`Internal Server Error : ${error.message}`);
   }
-}
+};
 
 export const updateOrderStatus = async (id, status) => {
   try {

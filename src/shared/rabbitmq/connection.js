@@ -11,9 +11,7 @@ export const connectToRabbitMQ = async () => {
     connection = await amrp.connect(URL);
     channel = await connection.createChannel();
 
-    console.log(
-      `RabbitMQ is ready to use connection: ${connection} : channel: ${channel}`,
-    );
+    console.log(`RabbitMQ is ready to use connection : ${URL}`);
 
     return { connection, channel };
   } catch (error) {

@@ -1,9 +1,5 @@
 import { Router } from "express";
-
 import * as sellerController from "../controller/product.seller.controller.js";
-// import { protect, authorizeSeller } from "../middleware/auth.middleware.js";
-
-const router = Router();
 import {
   validateAuthentication,
   authorize,
@@ -16,37 +12,40 @@ import {
   getProductSchema,
   getSellerProductsSchema,
 } from "../validations/products.validation.js";
+// import { protect, authorizeSeller } from "../middleware/auth.middleware.js";
+
+const router = Router();
 
 router.use(validateAuthentication);
 
 router.use(authorize("SELLER"));
 
 router.get(
-  "/seller",
+  "/",
   validateRequest(getSellerProductsSchema),
   sellerController.getSellerProductsController,
 );
 
 router.post(
-  "/seller",
+  "/",
   validateRequest(addProductSchema),
   sellerController.addProductController,
 );
 
 router.get(
-  "/seller/:id",
+  "/:id",
   validateRequest(getProductSchema),
   sellerController.getProductByIdController,
 );
 
 router.delete(
-  "/seller/:id",
+  "/:id",
   validateRequest(deleteProductSchema),
   sellerController.deleteProductController,
 );
 
 router.patch(
-  "/seller/:id",
+  "/:id",
   validateRequest(editProductSchema),
   sellerController.editProductController,
 );

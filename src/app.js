@@ -18,8 +18,11 @@ import { prisma } from "../clients/prisma.client.js";
 import rateLimit from "../utils/rateLimit.js";
 import { rateLimitMiddleware } from "../utils/limit.middleware.js";
 import { connectToRabbitMQ } from "./shared/rabbitmq/connection.js";
+import consumeEmail from "./modules/notification/consumer/email.consumer.js";
 
 await connectToRabbitMQ();
+
+consumeEmail();
 const app = express();
 
 // const limiter = await rateLimit(app, redisClient);
@@ -28,7 +31,7 @@ app.use(express.json());
 
 app.use(morgan("dev"));
 
-// app.use(limiter);
+// app.use(rateLimit);
 
 app.use(
   "/api/v1/users",
