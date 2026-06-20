@@ -10,7 +10,7 @@ redisClient.on("connect", () => {
 });
 
 redisClient.on("ready", () => {
-  console.log("Redis is ready to use");
+  console.log(`Redis is ready to use : ${REDIS_URL}`);
 });
 
 redisClient.on("error", (err) => {

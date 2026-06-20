@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 async function checkConnection() {
   try {
     await prisma.$connect();
-    console.log("Postgres is ready to use");
+    console.log(`Postgres is ready to use : ${process.env.DATABASE_URL}`);
   } catch (error) {
     console.error("DB connection error:", error.message);
   }

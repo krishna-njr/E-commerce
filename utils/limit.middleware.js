@@ -1,4 +1,4 @@
-import { rateLimiter } from "./ratelimiting.js";
+import customRateLimit from "./ratelimiting.js";
 
 export const rateLimitMiddleware = (options = {}) => {
   const {
@@ -10,7 +10,7 @@ export const rateLimitMiddleware = (options = {}) => {
 
   return async (req, res, next) => {
     const key = `ratelimit:${keyGenerator(req)}`;
-    const result = await rateLimiter(key, limit, window);
+    const result = await customRateLimit(key, limit, window);
     // console.log(result);
 
     res.set({
