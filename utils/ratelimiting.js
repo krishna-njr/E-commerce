@@ -1,6 +1,6 @@
 import redisClient from "../clients/redis.client.js";
 
-export const rateLimiter = async (key, limit, windowSeconds) => {
+const customRateLimit = async (key, limit, windowSeconds) => {
   const current = await redisClient.incr(key);
 
   if (current === 1) {
@@ -18,3 +18,5 @@ export const rateLimiter = async (key, limit, windowSeconds) => {
 
   return result;
 };
+
+export default customRateLimit;

@@ -1,4 +1,5 @@
 import AppError from "../../../../utils/AppError.js";
+import crypto from "crypto";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -8,10 +9,13 @@ import { comparePassword, hashPassword } from "../../../../utils/password.js";
 import verifyToken from "../../../../utils/verifyToken.js";
 import {
   createRefreshToken,
+  createSession,
   createUser,
+  deleteSession,
   findRefreshToken,
   findUserByEmail,
   findUserById,
+  getSession,
   getUserWithEmailAndPassword,
   revokeRefreshTokensForUser,
   updateUserById,
@@ -143,4 +147,75 @@ export const logoutService = async (refreshToken) => {
   await revokeRefreshTokensForUser(tokenHash);
 
   return true;
+};
+
+// ************************** session-redis ****************************
+
+export const sessionBasedLoginService = async ({ email, password }) => {
+  const user = await getUserWithEmailAndPassword(email);
+
+  if (!user) {
+    throw new AppError("Unauthorized", 400);
+  }
+
+  const isPasswordMatch = await comparePassword(password, user.password);
+  if (!isPasswordMatch) {
+    throw new AppError("Unauthorized ", 401);
+  }
+
+  const accessToken = await generateAccessToken(user);
+  const refreshToken = await generateRefreshToken(user);
+
+  const deviceId = crypto.randomUUID();
+
+  await createSession({
+    userId: user.id,
+    deviceId,
+    refreshTokenHash: hashToken(refreshToken),
+  });
+
+  return { accessToken, refreshToken, deviceId };
+};
+
+export const sessionBasedRefreshService = async (refreshToken, deviceId) => {
+  const payload = verifyToken(refreshToken, "refresh");
+
+  const userId = payload.userId;
+
+  const key = `session:${userId}:${deviceId}`;
+
+  const sessionExistence = await getSession(userId, deviceId);
+
+  if (!sessionExistence) {
+    throw new AppError(`Session not found (logged out or expired)`);
+  }
+
+  const session = JSON.parse(sessionExistence);
+
+  if (session.refreshTokenHash !== hashToken(refreshToken)) {
+    throw new AppError(`Refresh token mismatch`);
+  }
+
+  // rotate tokens
+  const newAccessToken = generateAccessToken(payload);
+  const newRefreshToken = generateRefreshToken(payload);
+
+  // update session
+  const sessionData = {
+    userId,
+    deviceId,
+    refreshTokenHash: hashToken(newRefreshToken),
+  };
+
+  await createSession(sessionData);
+
+  return {
+    accessTokena: newAccessToken,
+    refreshToken: newRefreshToken,
+    deviceId: deviceId,
+  };
+};
+
+export const sessionBasedLogoutSession = async (userId, deviceId) => {
+  await deleteSession(userId, deviceId);
 };

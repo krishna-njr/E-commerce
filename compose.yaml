@@ -7,6 +7,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgrespassword@postgres:5432/ecommerce
       REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://rabbitmq:5672
       JWT_ACCESS_TOKEN_SECRET: ${JWT_ACCESS_TOKEN_SECRET}
       JWT_ACCESS_TOKEN_EXPIRES_IN: ${JWT_ACCESS_TOKEN_EXPIRES_IN}
       JWT_REFRESH_TOKEN_SECRET: ${JWT_REFRESH_TOKEN_SECRET}
@@ -14,6 +15,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - rabbitmq
 
   postgres:
     image: postgres:16
@@ -37,6 +39,22 @@ services:
     volumes:
       - redis_data:/data
 
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: e-commerce-rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_logs:/var/log/rabbitmq
+
 volumes:
   postgres_data:
   redis_data:
+  rabbitmq_data:
+  rabbitmq_logs:

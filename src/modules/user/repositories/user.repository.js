@@ -1,4 +1,5 @@
 import { prisma } from "../../../../clients/prisma.client.js";
+import redisClient from "../../../../clients/redis.client.js";
 import AppError from "../../../../utils/AppError.js";
 
 export const findUserById = async (userId) => {
@@ -151,5 +152,60 @@ export const revokeAllRefreshTokensForUser = async (userId) => {
     return revokedTokens;
   } catch (error) {
     throw new AppError(`Internal server error: ${error.message}`, 500);
+  }
+};
+
+// ***************************** redis session ***************************
+
+export const createSession = async ({ userId, deviceId, refreshTokenHash }) => {
+  try {
+    const key = `session:${userId}:${deviceId}`;
+
+    console.log(`key`, key);
+
+    const sessionData = {
+      userId,
+      deviceId,
+      refreshTokenHash,
+      createdAt: Date.now(),
+    };
+    // console.log(`Inside create session :`, sessionData);
+    const created = await redisClient.set(
+      key,
+      JSON.stringify(sessionData),
+      "EX",
+      7 * 24 * 60 * 60,
+    );
+
+    if (created != "OK") {
+      throw new AppError(`Internal server error`, 500);
+    }
+  } catch (error) {
+    console.log(`Inside create session : ${error.message}`);
+    throw new AppError(`Internal server error`, 500);
+  }
+};
+
+export const getSession = async (userId, deviceId) => {
+  try {
+    const key = `session:${userId}:${deviceId}`;
+
+    const sessionData = await redisClient.get(key);
+
+    return sessionData ? JSON.parse(sessionData) : null;
+  } catch (error) {
+    console.log(`Inside get session : ${error.message}`);
+    throw new AppError(`Internal server error`, 500);
+  }
+};
+
+export const deleteSession = async (userId, deviceId) => {
+  try {
+    const key = `session:${userId}:${deviceId}`;
+
+    const deletedKey = await redisClient.del(key);
+  } catch (error) {
+    console.log(`Inside delete session : ${error.message}`);
+    throw new AppError(`Internal server error`, 500);
   }
 };
